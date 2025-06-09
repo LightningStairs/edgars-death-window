@@ -6,11 +6,13 @@
   font-style: normal;
 }
 
+a {
+  color: #CD1A44
+}
 
 body {
   background-color: black;
   color: white;
-  /* Use Roboto for the main body text */
   font-family: 'Roboto', sans-serif;
   display: flex;
   justify-content: center;
@@ -30,7 +32,6 @@ body {
 
 h1 {
   font-family: 'FFF Forward', Arial, sans-serif;
-  /* Keep FFF Forward for the header */
   font-size: 2.8em;
   margin-bottom: 30px;
   text-transform: uppercase;
@@ -41,7 +42,6 @@ h1 {
 
 #countdown {
   font-family: 'Lucida Console', 'Courier New', monospace;
-  /* Keep this for the countdown */
   font-size: 4.2em;
   font-weight: bold;
   margin-bottom: 50px;
@@ -54,7 +54,6 @@ blockquote {
   padding-left: 25px;
   margin: 40px auto;
   text-align: left;
-  /* Use Roboto for blockquote text as well */
   font-family: 'Roboto', sans-serif;
   font-size: 1.15em;
   max-width: 650px;
@@ -75,7 +74,6 @@ blockquote footer {
   color: white;
 }
 
-/* Optional: Subtle animation to the countdown digits */
 @keyframes pulse {
   0% {
     transform: scale(1);
