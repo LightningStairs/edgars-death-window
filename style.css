@@ -1,0 +1,99 @@
+/* Import FFF Forward font (keep this if you still want it for the header) */
+@font-face {
+  font-family: 'FFF Forward';
+  src: url('FFFFORWA.TTF') format('truetype');
+  font-weight: normal;
+  font-style: normal;
+}
+
+
+body {
+  background-color: black;
+  color: white;
+  /* Use Roboto for the main body text */
+  font-family: 'Roboto', sans-serif;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  min-height: 100vh;
+  margin: 0;
+  text-align: center;
+  line-height: 1.6;
+}
+
+.container {
+  max-width: 800px;
+  padding: 40px;
+  margin: 20px;
+  box-sizing: border-box;
+}
+
+h1 {
+  font-family: 'FFF Forward', Arial, sans-serif;
+  /* Keep FFF Forward for the header */
+  font-size: 2.8em;
+  margin-bottom: 30px;
+  text-transform: uppercase;
+  letter-spacing: 4px;
+  color: white;
+  text-shadow: 0 0 15px rgba(255, 255, 255, 0.5);
+}
+
+#countdown {
+  font-family: 'Lucida Console', 'Courier New', monospace;
+  /* Keep this for the countdown */
+  font-size: 4.2em;
+  font-weight: bold;
+  margin-bottom: 50px;
+  color: white;
+  text-shadow: 0 0 15px rgba(255, 255, 255, 0.7);
+}
+
+blockquote {
+  border-left: 5px solid white;
+  padding-left: 25px;
+  margin: 40px auto;
+  text-align: left;
+  /* Use Roboto for blockquote text as well */
+  font-family: 'Roboto', sans-serif;
+  font-size: 1.15em;
+  max-width: 650px;
+  background-color: rgba(255, 255, 255, 0.05);
+  padding: 25px;
+  border-radius: 8px;
+  color: white;
+}
+
+blockquote p {
+  margin-bottom: 15px;
+}
+
+blockquote footer {
+  margin-top: 20px;
+  font-size: 0.9em;
+  text-align: right;
+  color: white;
+}
+
+/* Optional: Subtle animation to the countdown digits */
+@keyframes pulse {
+  0% {
+    transform: scale(1);
+    opacity: 1;
+  }
+
+  50% {
+    transform: scale(1.02);
+    opacity: 0.95;
+  }
+
+  100% {
+    transform: scale(1);
+    opacity: 1;
+  }
+}
+
+#countdown span {
+  display: inline-block;
+  animation: pulse 2s infinite ease-in-out;
+}
