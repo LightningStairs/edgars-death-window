@@ -46,7 +46,7 @@ document.addEventListener('DOMContentLoaded', function() {
     setInterval(updateCountdown, 1000);
     updateCountdown();
 
-    const voteButtons = document.querySelectorAll('.vote-option-button'); 
+    const voteButtons = document.querySelectorAll('.vote-option-button');
     const voteCountDisplays = { 
         'sept14_20': document.getElementById('count_sept14_20'),
         'sept21_27': document.getElementById('count_sept21_27'),
@@ -58,25 +58,59 @@ document.addEventListener('DOMContentLoaded', function() {
         'wont_die_young': document.getElementById('count_wont_die_young')
     };
 
+    const COOLDOWN_DURATION = 60 * 20000; 
+
+    function updateSingleButtonState(button) {
+        const voteOption = button.dataset.voteOption;
+        const lastVoteTimestamp = localStorage.getItem(`lastVoteTimestamp_${voteOption}`); 
+        
+        if (lastVoteTimestamp) {
+            const timeElapsed = Date.now() - parseInt(lastVoteTimestamp);
+            if (timeElapsed < COOLDOWN_DURATION) {
+                button.disabled = true;
+                button.style.opacity = 0.6;
+                button.style.cursor = 'not-allowed';
+                return true; 
+            }
+        }
+        button.disabled = false;
+        button.style.opacity = 1;
+        button.style.cursor = 'pointer';
+        return false; 
+    }
+
+    voteButtons.forEach(button => {
+        updateSingleButtonState(button);
+    });
+
     voteButtons.forEach(button => {
         button.addEventListener('click', async () => {
             const voteOption = button.dataset.voteOption; 
-            if (voteOption) {
-                try {
-                    await db.collection('votes').add({
-                        timestamp: firebase.firestore.FieldValue.serverTimestamp(),
-                        voteType: voteOption 
-                    });
-                    console.log(`Vote for "${voteOption}" successfully cast!`);
-                } catch (error) {
-                    console.error("Error casting vote: ", error);
-                    alert("Failed to cast vote. Please try again.");
-                }
+
+            try {
+                localStorage.setItem(`lastVoteTimestamp_${voteOption}`, Date.now().toString());
+                updateSingleButtonState(button);
+
+                await db.collection('votes').add({
+                    timestamp: firebase.firestore.FieldValue.serverTimestamp(),
+                    voteType: voteOption
+                });
+                console.log(`Vote for "${voteOption}" successfully cast!`);
+
+                setTimeout(() => {
+                    updateSingleButtonState(button); 
+                }, COOLDOWN_DURATION);
+
+            } catch (error) {
+                console.error("Error casting vote: ", error);
+                alert("Failed to cast vote. Please try again.");
+
+                localStorage.removeItem(`lastVoteTimestamp_${voteOption}`);
+                updateSingleButtonState(button);
             }
         });
     });
 
-   
     db.collection('votes').onSnapshot((snapshot) => {
         const counts = {};
         Object.keys(voteCountDisplays).forEach(option => {
@@ -86,7 +120,7 @@ document.addEventListener('DOMContentLoaded', function() {
         snapshot.forEach(doc => {
             const data = doc.data();
             const voteType = data.voteType;
-            if (counts.hasOwnProperty(voteType)) { 
+            if (counts.hasOwnProperty(voteType)) {
                 counts[voteType]++;
             } else {
                 console.warn(`Untracked voteType found in Firestore: ${voteType}`);
