@@ -1,4 +1,15 @@
 document.addEventListener('DOMContentLoaded', function() {
+    const firebaseConfig = {
+      apiKey: "AIzaSyDPQ6FdM6oYYvrkGk0mheivw45L8Ig1xC8",
+      authDomain: "edgardeathwindowvotes.firebaseapp.com",
+      projectId: "edgardeathwindowvotes",
+      storageBucket: "edgardeathwindowvotes.firebasestorage.app",
+      messagingSenderId: "664396069532",
+      appId: "1:664396069532:web:8be4ca0d64db46ed290b59"
+    };
+    firebase.initializeApp(firebaseConfig);
+    const db = firebase.firestore();
+    
     const countdownTargetDate = new Date('September 16, 2025 00:00:00').getTime();
     const windowEndDate = new Date('October 15, 2025 23:59:59').getTime();
 
@@ -33,6 +44,62 @@ document.addEventListener('DOMContentLoaded', function() {
     }
 
     setInterval(updateCountdown, 1000);
+    updateCountdown();
 
-  updateCountdown();
+    const voteButtons = document.querySelectorAll('.vote-option-button'); 
+    const voteCountDisplays = { 
+        'sept14_20': document.getElementById('count_sept14_20'),
+        'sept21_27': document.getElementById('count_sept21_27'),
+        'sept28_oct4': document.getElementById('count_sept28_oct4'),
+        'oct5_11': document.getElementById('count_oct5_11'),
+        'oct12_18': document.getElementById('count_oct12_18'),
+        'before_window': document.getElementById('count_before_window'),
+        'after_window': document.getElementById('count_after_window'),
+        'wont_die_young': document.getElementById('count_wont_die_young')
+    };
+
+    voteButtons.forEach(button => {
+        button.addEventListener('click', async () => {
+            const voteOption = button.dataset.voteOption; 
+            if (voteOption) {
+                try {
+                    await db.collection('votes').add({
+                        timestamp: firebase.firestore.FieldValue.serverTimestamp(),
+                        voteType: voteOption 
+                    });
+                    console.log(`Vote for "${voteOption}" successfully cast!`);
+                } catch (error) {
+                    console.error("Error casting vote: ", error);
+                    alert("Failed to cast vote. Please try again.");
+                }
+            }
+        });
+    });
+
+   
+    db.collection('votes').onSnapshot((snapshot) => {
+        const counts = {};
+        Object.keys(voteCountDisplays).forEach(option => {
+            counts[option] = 0;
+        });
+
+        snapshot.forEach(doc => {
+            const data = doc.data();
+            const voteType = data.voteType;
+            if (counts.hasOwnProperty(voteType)) { 
+                counts[voteType]++;
+            } else {
+                console.warn(`Untracked voteType found in Firestore: ${voteType}`);
+            }
+        });
+
+        for (const option in counts) {
+            if (voteCountDisplays[option]) {
+                voteCountDisplays[option].textContent = counts[option];
+            }
+        }
+        console.log("Vote counts updated:", counts);
+    }, (error) => {
+        console.error("Error getting real-time updates: ", error);
+    });
 });
