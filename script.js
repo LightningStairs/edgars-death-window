@@ -50,7 +50,7 @@ document.addEventListener('DOMContentLoaded', function() {
         'before_window': document.getElementById('count_before_window'),
         'after_window': document.getElementById('count_after_window'),
         'wont_die_young': document.getElementById('count_wont_die_young'),
-        'already_dead': document.getElementById('count_already_dead') // NEW OPTION ADDED HERE
+        'already_dead': document.getElementById('count_already_dead') 
     };
 
 
