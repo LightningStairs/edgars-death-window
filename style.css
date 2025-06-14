@@ -1,4 +1,3 @@
-/* Import FFF Forward font (keep this if you still want it for the header) */
 @font-face {
   font-family: 'FFF Forward';
   src: url('FFFFORWA.TTF') format('truetype');
@@ -95,3 +94,37 @@ blockquote footer {
   display: inline-block;
   animation: pulse 2s infinite ease-in-out;
 }
+
+.poll-options {
+    display: flex;
+    flex-wrap: wrap; 
+    gap: 10px; 
+    justify-content: center; 
+    margin-bottom: 20px;
+}
+
+.vote-option-button {
+    background-color: #00FFFF; 
+    color: black;
+    padding: 12px 20px;
+    border: none;
+    border-radius: 5px;
+    font-size: 1em;
+    cursor: pointer;
+    transition: background-color 0.3s ease, transform 0.1s ease;
+    flex: 1 1 auto; 
+    min-width: 200px; 
+    max-width: 45%; 
+}
+
+.vote-option-button:hover {
+    background-color: #00E0E0; 
+    transform: translateY(-2px); 
+}
+
+.poll-results p {
+    font-size: 1.1em;
+    margin-bottom: 8px; 
+    text-align: center; 
+}
+
