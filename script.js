@@ -40,8 +40,9 @@ document.addEventListener('DOMContentLoaded', function() {
     setInterval(updateCountdown, 1000);
     updateCountdown();
 
+    // --- Voting Logic (Updated for visual display) ---
     const voteButtons = document.querySelectorAll('.vote-option-button');
-    const voteCountDisplays = {
+    const voteCountDisplays = { // Map vote option keys to their display span IDs
         'sept14_20': document.getElementById('count_sept14_20'),
         'sept21_27': document.getElementById('count_sept21_27'),
         'sept28_oct4': document.getElementById('count_sept28_oct4'),
@@ -50,90 +51,94 @@ document.addEventListener('DOMContentLoaded', function() {
         'before_window': document.getElementById('count_before_window'),
         'after_window': document.getElementById('count_after_window'),
         'wont_die_young': document.getElementById('count_wont_die_young'),
-        'already_dead': document.getElementById('count_already_dead') 
+        'already_dead': document.getElementById('count_already_dead')
     };
 
-    const COOLDOWN_DURATION = 60 * 450000; 
+    const votePercentageDisplays = { // Map vote option keys to their percentage span IDs
+        'sept14_20': document.getElementById('percent_sept14_20'),
+        'sept21_27': document.getElementById('percent_sept21_27'),
+        'sept28_oct4': document.getElementById('percent_sept28_oct4'),
+        'oct5_11': document.getElementById('percent_oct5_11'),
+        'oct12_18': document.getElementById('percent_oct12_18'),
+        'before_window': document.getElementById('percent_before_window'),
+        'after_window': document.getElementById('percent_after_window'),
+        'wont_die_young': document.getElementById('percent_wont_die_young'),
+        'already_dead': document.getElementById('percent_already_dead')
+    };
 
-    function updateSingleButtonState(button) {
-        const voteOption = button.dataset.voteOption;
-        const lastVoteTimestamp = localStorage.getItem(`lastVoteTimestamp_${voteOption}`); 
+    const voteBars = { // Map vote option keys to their bar fill div IDs
+        'sept14_20': document.getElementById('bar_sept14_20'),
+        'sept21_27': document.getElementById('bar_sept21_27'),
+        'sept28_oct4': document.getElementById('bar_sept28_oct4'),
+        'oct5_11': document.getElementById('bar_oct5_11'),
+        'oct12_18': document.getElementById('bar_oct12_18'),
+        'before_window': document.getElementById('bar_before_window'),
+        'after_window': document.getElementById('bar_after_window'),
+        'wont_die_young': document.getElementById('bar_wont_die_young'),
+        'already_dead': document.getElementById('bar_already_dead')
+    };
 
-        if (lastVoteTimestamp) {
-            const timeElapsed = Date.now() - parseInt(lastVoteTimestamp);
-            if (timeElapsed < COOLDOWN_DURATION) {
-                button.disabled = true;
-                button.style.opacity = 0.6;
-                button.style.cursor = 'not-allowed';
-                return true; 
-            }
-        }
-        
-        button.disabled = false;
-        button.style.opacity = 1;
-        button.style.cursor = 'pointer';
-        return false; 
-    }
 
-    voteButtons.forEach(button => {
-        updateSingleButtonState(button);
-    });
-
+    // Add click listeners to all vote buttons
     voteButtons.forEach(button => {
         button.addEventListener('click', async () => {
-            const voteOption = button.dataset.voteOption; 
-
-            try {
-                localStorage.setItem(`lastVoteTimestamp_${voteOption}`, Date.now().toString());
-                
-                updateSingleButtonState(button);
-               
-                await db.collection('votes').add({
-                    timestamp: firebase.firestore.FieldValue.serverTimestamp(),
-                    voteType: voteOption
-                });
-                
-                console.log(`Vote for "${voteOption}" successfully cast!`);
-                
-                setTimeout(() => {
-                    updateSingleButtonState(button); 
-                }, COOLDOWN_DURATION);
-            } catch (error) {
-                console.error("Error casting vote: ", error);
-                
-                alert("Failed to cast vote. Please try again.");
-                
-                localStorage.removeItem(`lastVoteTimestamp_${voteOption}`);
-                
-                updateSingleButtonState(button);
+            const voteOption = button.dataset.voteOption;
+            if (voteOption) {
+                try {
+                    await db.collection('votes').add({
+                        timestamp: firebase.firestore.FieldValue.serverTimestamp(),
+                        voteType: voteOption
+                    });
+                    console.log(`Vote for "${voteOption}" successfully cast!`);
+                } catch (error) {
+                    console.error("Error casting vote: ", error);
+                    alert("Failed to cast vote. Please try again.");
+                }
             }
         });
     });
 
+    // Listen for real-time updates to the votes collection
     db.collection('votes').onSnapshot((snapshot) => {
         const counts = {};
+        let totalVotes = 0; // Track total votes
+
+        // Initialize counts for all options to 0
         Object.keys(voteCountDisplays).forEach(option => {
             counts[option] = 0;
         });
 
+        // Tally votes from the database
         snapshot.forEach(doc => {
             const data = doc.data();
             const voteType = data.voteType;
             if (counts.hasOwnProperty(voteType)) {
                 counts[voteType]++;
+                totalVotes++; // Increment total votes
             } else {
                 console.warn(`Untracked voteType found in Firestore: ${voteType}`);
             }
         });
 
+        // Update the display for each vote option (counts, percentages, bars)
         for (const option in counts) {
             if (voteCountDisplays[option]) {
                 voteCountDisplays[option].textContent = counts[option];
+
+                const percentage = totalVotes > 0 ? ((counts[option] / totalVotes) * 100).toFixed(1) : 0;
+                if (votePercentageDisplays[option]) {
+                    votePercentageDisplays[option].textContent = `(${percentage}%)`;
+                }
+
+                if (voteBars[option]) {
+                    voteBars[option].style.width = `${percentage}%`;
+                }
             }
         }
         console.log("Vote counts updated:", counts);
     }, (error) => {
         console.error("Error getting real-time updates: ", error);
     });
+
 
 });
