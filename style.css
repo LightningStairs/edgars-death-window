@@ -122,16 +122,66 @@ blockquote footer {
     transform: translateY(-2px); 
 }
 
-.poll-results p {
-    font-size: 1.1em;
-    margin-bottom: 8px; 
-    text-align: center; 
+.poll-results {
+  margin-top: 30px;
+  background-color: rgba(0, 0, 0, 0.4);
+  padding: 20px;
+  border-radius: 8px;
+  box-shadow: 0 0 15px rgba(0, 0, 0, 0.5);
+}
+
+.poll-results h3 {
+  text-align: center;
+  margin-bottom: 20px;
+  text-shadow: 0 0 8px rgba(255, 215, 0, 0.5);
+}
+
+.poll-result-item {
+  display: flex;
+  flex-direction: column;
+  margin-bottom: 15px;
+}
+
+.poll-label {
+  font-size: 1em;
+  color: white;
+  margin-bottom: 5px;
+  text-align: left;
+}
+
+.poll-visual-data {
+  display: flex;
+  align-items: center;
+  gap: 10px;
 }
 
 .vote-count-display {
-    font-weight: bold;
-    color: #FFD700;
-    margin-left: 5px; 
+  font-weight: bold;
+  color: #FFD700;
+  min-width: 25px;
+  text-align: right;
+}
+
+.vote-percentage {
+  color: #FFD700;
+  font-size: 0.9em;
+  min-width: 40px;
+}
+
+.vote-bar-container {
+  flex-grow: 1;
+  height: 15px;
+  background-color: rgba(255, 255, 255, 0.2);
+  border-radius: 5px;
+  overflow: hidden;
+}
+
+.vote-bar-fill {
+  height: 100%;
+  background-color: #CC0000;
+  border-radius: 5px;
+  transition: width 0.5s ease-out;
+  width: 0%;
 }
 
 
