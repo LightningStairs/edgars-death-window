@@ -53,21 +53,59 @@ document.addEventListener('DOMContentLoaded', function() {
         'already_dead': document.getElementById('count_already_dead') 
     };
 
+    const COOLDOWN_DURATION = 60 * 450000; 
+
+    function updateSingleButtonState(button) {
+        const voteOption = button.dataset.voteOption;
+        const lastVoteTimestamp = localStorage.getItem(`lastVoteTimestamp_${voteOption}`); 
+
+        if (lastVoteTimestamp) {
+            const timeElapsed = Date.now() - parseInt(lastVoteTimestamp);
+            if (timeElapsed < COOLDOWN_DURATION) {
+                button.disabled = true;
+                button.style.opacity = 0.6;
+                button.style.cursor = 'not-allowed';
+                return true; 
+            }
+        }
+        
+        button.disabled = false;
+        button.style.opacity = 1;
+        button.style.cursor = 'pointer';
+        return false; 
+    }
+
+    voteButtons.forEach(button => {
+        updateSingleButtonState(button);
+    });
 
     voteButtons.forEach(button => {
         button.addEventListener('click', async () => {
-            const voteOption = button.dataset.voteOption;
-            if (voteOption) {
-                try {
-                    await db.collection('votes').add({
-                        timestamp: firebase.firestore.FieldValue.serverTimestamp(),
-                        voteType: voteOption
-                    });
-                    console.log(`Vote for "${voteOption}" successfully cast!`);
-                } catch (error) {
-                    console.error("Error casting vote: ", error);
-                    alert("Failed to cast vote. Please try again.");
-                }
+            const voteOption = button.dataset.voteOption; 
+
+            try {
+                localStorage.setItem(`lastVoteTimestamp_${voteOption}`, Date.now().toString());
+                
+                updateSingleButtonState(button);
+               
+                await db.collection('votes').add({
+                    timestamp: firebase.firestore.FieldValue.serverTimestamp(),
+                    voteType: voteOption
+                });
+                
+                console.log(`Vote for "${voteOption}" successfully cast!`);
+                
+                setTimeout(() => {
+                    updateSingleButtonState(button); 
+                }, COOLDOWN_DURATION);
+            } catch (error) {
+                console.error("Error casting vote: ", error);
+                
+                alert("Failed to cast vote. Please try again.");
+                
+                localStorage.removeItem(`lastVoteTimestamp_${voteOption}`);
+                
+                updateSingleButtonState(button);
             }
         });
     });
