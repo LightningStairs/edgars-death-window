@@ -40,46 +40,71 @@ document.addEventListener('DOMContentLoaded', function() {
     setInterval(updateCountdown, 1000);
     updateCountdown();
 
-    // --- Voting Logic (Updated for visual display) ---
     const voteButtons = document.querySelectorAll('.vote-option-button');
-    const voteCountDisplays = { // Map vote option keys to their display span IDs
-        'sept14_20': document.getElementById('count_sept14_20'),
-        'sept21_27': document.getElementById('count_sept21_27'),
-        'sept28_oct4': document.getElementById('count_sept28_oct4'),
-        'oct5_11': document.getElementById('count_oct5_11'),
-        'oct12_18': document.getElementById('count_oct12_18'),
-        'before_window': document.getElementById('count_before_window'),
-        'after_window': document.getElementById('count_after_window'),
-        'wont_die_young': document.getElementById('count_wont_die_young'),
-        'already_dead': document.getElementById('count_already_dead')
-    };
 
-    const votePercentageDisplays = { // Map vote option keys to their percentage span IDs
-        'sept14_20': document.getElementById('percent_sept14_20'),
-        'sept21_27': document.getElementById('percent_sept21_27'),
-        'sept28_oct4': document.getElementById('percent_sept28_oct4'),
-        'oct5_11': document.getElementById('percent_oct5_11'),
-        'oct12_18': document.getElementById('percent_oct12_18'),
-        'before_window': document.getElementById('percent_before_window'),
-        'after_window': document.getElementById('percent_after_window'),
-        'wont_die_young': document.getElementById('percent_wont_die_young'),
-        'already_dead': document.getElementById('percent_already_dead')
-    };
+    const pollOptionKeys = [
+        'sept14_20', 'sept21_27', 'sept28_oct4', 'oct5_11', 'oct12_18',
+        'before_window', 'after_window', 'wont_die_young', 'already_dead'
+    ];
 
-    const voteBars = { // Map vote option keys to their bar fill div IDs
-        'sept14_20': document.getElementById('bar_sept14_20'),
-        'sept21_27': document.getElementById('bar_sept21_27'),
-        'sept28_oct4': document.getElementById('bar_sept28_oct4'),
-        'oct5_11': document.getElementById('bar_oct5_11'),
-        'oct12_18': document.getElementById('bar_oct12_18'),
-        'before_window': document.getElementById('bar_before_window'),
-        'after_window': document.getElementById('bar_after_window'),
-        'wont_die_young': document.getElementById('bar_wont_die_young'),
-        'already_dead': document.getElementById('bar_already_dead')
-    };
+    const voteCountDisplays = {};
+    const votePercentageDisplays = {};
+    const voteBars = {};
 
+    pollOptionKeys.forEach(key => {
+        voteCountDisplays[key] = document.getElementById(`count_${key}`);
+        votePercentageDisplays[key] = document.getElementById(`percent_${key}`);
+        voteBars[key] = document.getElementById(`bar_${key}`);
+    });
 
-    // Add click listeners to all vote buttons
+    const ctx = document.getElementById('votePieChart');
+    let votePieChart; 
+
+    const pollOptionLabels = [
+        'Sept 14 - Sept 20', 'Sept 21 - Sept 27', 'Sept 28 - Oct 4', 'Oct 5 - Oct 11', 'Oct 12 - Oct 18',
+        'Before Window', 'After Window', 'Won\'t Die Young', 'Already Dead'
+    ];
+    const chartColors = [
+        '#E74C3C', // Sept 14-20 (Red)
+        '#C0392B', // Sept 21-27 (Darker Red)
+        '#A52A2A', // Sept 28-Oct 4 (Brownish Red)
+        '#8B0000', // Oct 5-11 (Dark Red)
+        '#6A0000', // Oct 12-18 (Deep Red)
+        '#3498DB', // Before Window (Blue)
+        '#2980B9', // After Window (Darker Blue)
+        '#F1C40F', // Won't Die Young (Yellow/Gold)
+        '#7F8C8D'  // Already Dead (Grey/Slate)
+    ];
+
+    if (ctx) {
+        votePieChart = new Chart(ctx, {
+            type: 'pie',
+            data: {
+                labels: pollOptionLabels,
+                datasets: [{
+                    data: [], 
+                    backgroundColor: chartColors,
+                    hoverOffset: 4
+                }]
+            },
+            options: {
+                responsive: true,
+                plugins: {
+                    legend: {
+                        labels: {
+                            color: 'white' 
+                        }
+                    },
+                    title: {
+                        display: true,
+                        text: 'Distribution of Predictions',
+                        color: '#FFD700' 
+                    }
+                }
+            }
+        });
+    }
+
     voteButtons.forEach(button => {
         button.addEventListener('click', async () => {
             const voteOption = button.dataset.voteOption;
@@ -98,31 +123,27 @@ document.addEventListener('DOMContentLoaded', function() {
         });
     });
 
-    // Listen for real-time updates to the votes collection
     db.collection('votes').onSnapshot((snapshot) => {
         const counts = {};
-        let totalVotes = 0; // Track total votes
+        let totalVotes = 0;
 
-        // Initialize counts for all options to 0
-        Object.keys(voteCountDisplays).forEach(option => {
+        pollOptionKeys.forEach(option => {
             counts[option] = 0;
         });
 
-        // Tally votes from the database
         snapshot.forEach(doc => {
             const data = doc.data();
             const voteType = data.voteType;
-            if (counts.hasOwnProperty(voteType)) {
+            if (counts.hasOwnProperty(voteType)) { 
                 counts[voteType]++;
-                totalVotes++; // Increment total votes
+                totalVotes++; 
             } else {
                 console.warn(`Untracked voteType found in Firestore: ${voteType}`);
             }
         });
 
-        // Update the display for each vote option (counts, percentages, bars)
-        for (const option in counts) {
-            if (voteCountDisplays[option]) {
+        pollOptionKeys.forEach(option => { 
+            if (voteCountDisplays[option]) { 
                 voteCountDisplays[option].textContent = counts[option];
 
                 const percentage = totalVotes > 0 ? ((counts[option] / totalVotes) * 100).toFixed(1) : 0;
@@ -134,11 +155,16 @@ document.addEventListener('DOMContentLoaded', function() {
                     voteBars[option].style.width = `${percentage}%`;
                 }
             }
+        });
+
+        if (votePieChart) {
+            const chartData = pollOptionKeys.map(key => counts[key]);
+            votePieChart.data.datasets[0].data = chartData;
+            votePieChart.update(); 
         }
+
         console.log("Vote counts updated:", counts);
     }, (error) => {
         console.error("Error getting real-time updates: ", error);
     });
-
-
 });
