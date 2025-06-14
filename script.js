@@ -58,7 +58,7 @@ document.addEventListener('DOMContentLoaded', function() {
         'wont_die_young': document.getElementById('count_wont_die_young')
     };
 
-    const COOLDOWN_DURATION = 60 * 20000; 
+    const COOLDOWN_DURATION = 60 * 40000; 
 
     function updateSingleButtonState(button) {
         const voteOption = button.dataset.voteOption;
