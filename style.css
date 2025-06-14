@@ -128,3 +128,10 @@ blockquote footer {
     text-align: center; 
 }
 
+.vote-count-display {
+    font-weight: bold;
+    color: #FFD700;
+    margin-left: 5px; 
+}
+
+
