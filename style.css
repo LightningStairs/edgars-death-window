@@ -104,8 +104,8 @@ blockquote footer {
 }
 
 .vote-option-button {
-    background-color: #00FFFF; 
-    color: black;
+    background-color: #CC0000; 
+    color: FFFFFF;
     padding: 12px 20px;
     border: none;
     border-radius: 5px;
@@ -118,7 +118,7 @@ blockquote footer {
 }
 
 .vote-option-button:hover {
-    background-color: #00E0E0; 
+    background-color: #FF0000; 
     transform: translateY(-2px); 
 }
 
