@@ -10,6 +10,7 @@
   <link href="https://fonts.googleapis.com/css2?family=Roboto:wght@500&display=swap" rel="stylesheet">
   <link rel="stylesheet" href="./style.css">
 
+  <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
   <script src="https://www.gstatic.com/firebasejs/9.6.1/firebase-app-compat.js"></script>
   <script src="https://www.gstatic.com/firebasejs/9.6.1/firebase-firestore-compat.js"></script>
 </head>
@@ -48,24 +49,28 @@
       <h2 style="font-size: 1.5em; margin-top: 40px; font-family: 'FFF Forward', sans-serif; color: #FFD700;">Predict
         Edgar's Death Date!</h2>
       <p style="margin-bottom: 20px;">Cast your vote for when you think it will happen:</p>
-
+    
       <div class="poll-options">
-        <button class="vote-option-button" data-vote-option="sept14_20">Episode 217: Sept 14 2025 - Sept 20 2025</button>
-        <button class="vote-option-button" data-vote-option="sept21_27">Episode 218: Sept 21 2025 - Sept 27 2025</button>
-        <button class="vote-option-button" data-vote-option="sept28_oct4">Episode 219: Sept 28 2025 - Oct 4 2025</button>
-        <button class="vote-option-button" data-vote-option="oct5_11">Episode 220: Oct 5 2025 - Oct 11 2025</button>
-        <button class="vote-option-button" data-vote-option="oct12_18">Episode 221: Oct 12 2025 - Oct 18 2025</button>
+        <button class="vote-option-button" data-vote-option="sept14_20">Sept 14 2025 - Sept 20 2025</button>
+        <button class="vote-option-button" data-vote-option="sept21_27">Sept 21 2025 - Sept 27 2025</button>
+        <button class="vote-option-button" data-vote-option="sept28_oct4">Sept 28 2025 - Oct 4 2025</button>
+        <button class="vote-option-button" data-vote-option="oct5_11">Oct 5 2025 - Oct 11 2025</button>
+        <button class="vote-option-button" data-vote-option="oct12_18">Oct 12 2025 - Oct 18 2025</button>
         <button class="vote-option-button" data-vote-option="before_window">Before the Death Date Window Opens</button>
         <button class="vote-option-button" data-vote-option="after_window">After the Death Date Window Closes</button>
         <button class="vote-option-button" data-vote-option="wont_die_young">Latvia Mike's Edgar won't die young</button>
-        <button class="vote-option-button" data-vote-option="already_dead">Latvia Mike's Edgar is Already Dead and We Don't Know</button>
+        <button class="vote-option-button" data-vote-option="already_dead">Latvia Mike's Edgar is Already Dead and We Don't
+          Know</button>
       </div>
-
-      <div class="poll-results" style="margin-top: 30px;">
-        <h3 style="font-size: 1.3em; color: white; margin-bottom: 15px;">Current Votes:</h3>
-
+    
+      <div class="poll-results"
+        style="margin-top: 30px; background-color: rgba(0, 0, 0, 0.4); padding: 20px; border-radius: 8px; box-shadow: 0 0 15px rgba(0, 0, 0, 0.5);">
+        <h3
+          style="font-size: 1.3em; color: white; margin-bottom: 15px; text-align: center; text-shadow: 0 0 8px rgba(255, 215, 0, 0.5);">
+          Current Predictions:</h3>
+    
         <div class="poll-result-item">
-          <div class="poll-label">Episode 217: Sept 14 - Sept 20:</div>
+          <div class="poll-label">Sept 14 - Sept 20:</div>
           <div class="poll-visual-data">
             <span id="count_sept14_20" class="vote-count-display">0</span>
             <span id="percent_sept14_20" class="vote-percentage">(0%)</span>
@@ -74,9 +79,9 @@
             </div>
           </div>
         </div>
-
+    
         <div class="poll-result-item">
-          <div class="poll-label">Episode 218: Sept 21 - Sept 27:</div>
+          <div class="poll-label">Sept 21 - Sept 27:</div>
           <div class="poll-visual-data">
             <span id="count_sept21_27" class="vote-count-display">0</span>
             <span id="percent_sept21_27" class="vote-percentage">(0%)</span>
@@ -85,9 +90,9 @@
             </div>
           </div>
         </div>
-
+    
         <div class="poll-result-item">
-          <div class="poll-label">Episode 219: Sept 28 - Oct 4:</div>
+          <div class="poll-label">Sept 28 - Oct 4:</div>
           <div class="poll-visual-data">
             <span id="count_sept28_oct4" class="vote-count-display">0</span>
             <span id="percent_sept28_oct4" class="vote-percentage">(0%)</span>
@@ -96,9 +101,9 @@
             </div>
           </div>
         </div>
-
+    
         <div class="poll-result-item">
-          <div class="poll-label">Episode 220: Oct 5 - Oct 11:</div>
+          <div class="poll-label">Oct 5 - Oct 11:</div>
           <div class="poll-visual-data">
             <span id="count_oct5_11" class="vote-count-display">0</span>
             <span id="percent_oct5_11" class="vote-percentage">(0%)</span>
@@ -107,9 +112,9 @@
             </div>
           </div>
         </div>
-
+    
         <div class="poll-result-item">
-          <div class="poll-label">Episode 221: Oct 12 - Oct 18:</div>
+          <div class="poll-label">Oct 12 - Oct 18:</div>
           <div class="poll-visual-data">
             <span id="count_oct12_18" class="vote-count-display">0</span>
             <span id="percent_oct12_18" class="vote-percentage">(0%)</span>
@@ -118,7 +123,7 @@
             </div>
           </div>
         </div>
-
+    
         <div class="poll-result-item">
           <div class="poll-label">Before Window:</div>
           <div class="poll-visual-data">
@@ -129,7 +134,7 @@
             </div>
           </div>
         </div>
-
+    
         <div class="poll-result-item">
           <div class="poll-label">After Window:</div>
           <div class="poll-visual-data">
@@ -140,7 +145,7 @@
             </div>
           </div>
         </div>
-
+    
         <div class="poll-result-item">
           <div class="poll-label">Won't Die Young:</div>
           <div class="poll-visual-data">
@@ -151,7 +156,7 @@
             </div>
           </div>
         </div>
-
+    
         <div class="poll-result-item">
           <div class="poll-label">Already Dead:</div>
           <div class="poll-visual-data">
@@ -162,9 +167,12 @@
             </div>
           </div>
         </div>
-
+    
       </div>
-    </div>
+      <div style="width: 100%; max-width: 500px; margin: 30px auto 0 auto;">
+        <canvas id="votePieChart"></canvas>
+      </div>
+      </div>
 
   </div>
 
