@@ -46,6 +46,18 @@ document.addEventListener('DOMContentLoaded', function() {
         'sept14_20', 'sept21_27', 'sept28_oct4', 'oct5_11', 'oct12_18',
         'before_window', 'after_window', 'wont_die_young', 'already_dead'
     ];
+    
+    const voteOptions = {
+        'sept14_20': { label: 'Episode 217: Sept 14 - Sept 20' },
+        'sept21_27': { label: 'Episode 218: Sept 21 - Sept 27' },
+        'sept28_oct4': { label: 'Episode 219: Sept 28 - Oct 4' },
+        'oct5_11': { label: 'Episode 220: Oct 5 - Oct 11' },
+        'oct12_18': { label: 'Episode 221: Oct 12 - Oct 18' },
+        'before_window': { label: 'Before Window' },
+        'after_window': { label: 'After Window' },
+        'wont_die_young': { label: 'Won\'t Die Young' },
+        'already_dead': { label: 'Already Dead' }
+    };
 
     const voteCountDisplays = {};
     const votePercentageDisplays = {};
@@ -57,54 +69,97 @@ document.addEventListener('DOMContentLoaded', function() {
         voteBars[key] = document.getElementById(`bar_${key}`);
     });
 
-    const ctx = document.getElementById('votePieChart');
-    let votePieChart; 
+    const ctx = document.getElementById('votePieChart'); 
+    let voteBarChart;
 
-    const pollOptionLabels = [
-        'Sept 14 - Sept 20', 'Sept 21 - Sept 27', 'Sept 28 - Oct 4', 'Oct 5 - Oct 11', 'Oct 12 - Oct 18',
-        'Before Window', 'After Window', 'Won\'t Die Young', 'Already Dead'
-    ];
     const chartColors = [
-        '#E74C3C', // Sept 14-20 (Red)
-        '#C0392B', // Sept 21-27 (Darker Red)
-        '#A52A2A', // Sept 28-Oct 4 (Brownish Red)
-        '#8B0000', // Oct 5-11 (Dark Red)
-        '#6A0000', // Oct 12-18 (Deep Red)
-        '#3498DB', // Before Window (Blue)
-        '#2980B9', // After Window (Darker Blue)
-        '#F1C40F', // Won't Die Young (Yellow/Gold)
-        '#7F8C8D'  // Already Dead (Grey/Slate)
+        '#E4002B', // Sept 14 - Sept 20 (Red)
+        '#C20023', // Sept 21 - Sept 27 (Darker Red)
+        '#A0001B', // Sept 28 - Oct 4 (Even Darker Red)
+        '#7E0013', // Oct 5 - Oct 11 (Deep Red)
+        '#5C000B', // Oct 12 - Oct 18 (Darkest Red)
+        '#4169E1', // Before Window (Royal Blue)
+        '#00008B', // After Window (Dark Blue)
+        '#FFD700', // Won't Die Young (Gold)
+        '#808080'  // Already Dead (Gray)
     ];
 
-    if (ctx) {
-        votePieChart = new Chart(ctx, {
-            type: 'pie',
-            data: {
-                labels: pollOptionLabels,
-                datasets: [{
-                    data: [], 
-                    backgroundColor: chartColors,
-                    hoverOffset: 4
-                }]
-            },
-            options: {
-                responsive: true,
-                maintainAspectRatio: false,
-                plugins: {
-                    legend: {
-                        labels: {
-                            color: 'white' 
+
+    
+    function renderChart(voteCounts) {
+        const labels = pollOptionKeys.map(key => voteOptions[key].label); 
+        const voteCountsArray = pollOptionKeys.map(optionKey => voteCounts[optionKey] || 0);
+
+        
+        if (window.voteBarChart) { 
+            window.voteBarChart.destroy();
+        }
+
+        if (ctx) { 
+            window.voteBarChart = new Chart(ctx, {
+                type: 'bar',
+                data: {
+                    labels: labels,
+                    datasets: [{
+                        label: 'Number of Votes', 
+                        data: voteCountsArray,
+                        backgroundColor: chartColors, 
+                        borderColor: 'rgba(255, 255, 255, 0.8)',
+                        borderWidth: 1
+                    }]
+                },
+                options: {
+                    responsive: true,
+                    maintainAspectRatio: false, 
+                    plugins: {
+                        legend: {
+                            display: false, 
+                            labels: {
+                                color: 'white'
+                            }
+                        },
+                        title: {
+                            display: true,
+                            text: 'Distribution of Predictions',
+                            color: '#FFD700'
                         }
                     },
-                    title: {
-                        display: true,
-                        text: 'Distribution of Predictions',
-                        color: '#FFD700' 
+                    scales: { 
+                        x: { 
+                            beginAtZero: true,
+                            ticks: {
+                                color: 'white',
+                                font: {
+                                    size: 12 
+                                },
+                                autoSkip: false, 
+                                maxRotation: 90, 
+                                minRotation: 45
+                            },
+                            grid: {
+                                color: 'rgba(255, 255, 255, 0.1)' 
+                            }
+                        },
+                        y: { 
+                            beginAtZero: true,
+                            ticks: {
+                                color: 'white', 
+                                callback: function(value) { 
+                                    if (Number.isInteger(value)) {
+                                        return value;
+                                    }
+                                }
+                            },
+                            grid: {
+                                color: 'rgba(255, 255, 255, 0.1)' 
+                            }
+                        }
                     }
                 }
-            }
-        });
+            });
+        }
     }
+
 
     voteButtons.forEach(button => {
         button.addEventListener('click', async () => {
@@ -135,16 +190,16 @@ document.addEventListener('DOMContentLoaded', function() {
         snapshot.forEach(doc => {
             const data = doc.data();
             const voteType = data.voteType;
-            if (counts.hasOwnProperty(voteType)) { 
+            if (counts.hasOwnProperty(voteType)) {
                 counts[voteType]++;
-                totalVotes++; 
+                totalVotes++;
             } else {
                 console.warn(`Untracked voteType found in Firestore: ${voteType}`);
             }
         });
 
-        pollOptionKeys.forEach(option => { 
-            if (voteCountDisplays[option]) { 
+        pollOptionKeys.forEach(option => {
+            if (voteCountDisplays[option]) {
                 voteCountDisplays[option].textContent = counts[option];
 
                 const percentage = totalVotes > 0 ? ((counts[option] / totalVotes) * 100).toFixed(1) : 0;
@@ -158,11 +213,7 @@ document.addEventListener('DOMContentLoaded', function() {
             }
         });
 
-        if (votePieChart) {
-            const chartData = pollOptionKeys.map(key => counts[key]);
-            votePieChart.data.datasets[0].data = chartData;
-            votePieChart.update(); 
-        }
+        renderChart(counts); 
 
         console.log("Vote counts updated:", counts);
     }, (error) => {
