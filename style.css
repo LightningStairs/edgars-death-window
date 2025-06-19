@@ -184,4 +184,34 @@ blockquote footer {
   width: 0%;
 }
 
+.poll-visuals-container {
+    display: flex;       
+    flex-wrap: wrap;     
+    justify-content: center; 
+    align-items: flex-start; 
+    gap: 20px;           
+    margin-top: 30px;    
+}
+
+.poll-results {
+    flex: 1 1 48%;       
+    min-width: 300px;    
+    box-sizing: border-box; 
+}
+
+.pie-chart-container {
+    background-color: rgba(0, 0, 0, 0.4);
+    padding: 20px;
+    border-radius: 8px;
+    box-shadow: 0 0 15px rgba(0, 0, 0, 0.5);
+
+    width: 100%;        
+    max-width: 500px;   
+    margin: 0 auto;     
+
+    flex: 1 1 48%;      
+    min-width: 300px;   
+    box-sizing: border-box; 
+}
+
 
