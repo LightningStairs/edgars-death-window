@@ -204,19 +204,15 @@ blockquote footer {
     padding: 20px;
     border-radius: 8px;
     box-shadow: 0 0 15px rgba(0, 0, 0, 0.5);
-
-    width: 100%;
-    max-width: 500px;
-    margin: 0 auto;
-
-    flex: 1 1 48%;
-    min-width: 300px;
-    box-sizing: border-box;
-    height: 100%;
+    margin: 0 auto;      
+    flex: 1 1 48%;       
+    min-width: 300px;    
+    box-sizing: border-box; 
+    min-height: 400px; 
 }
 
 .pie-chart-container canvas { 
-    width: 100% !important; 
-    height: 100% !important;
-    display: block;
+    width: 100% !important;  
+    height: 100% !important; 
+    display: block;          
 }
