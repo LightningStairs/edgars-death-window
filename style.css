@@ -193,17 +193,16 @@ blockquote footer {
 }
 
 .pie-chart-container {
-    background-color: rgba(0, 0, 0, 0.4);
-    padding: 20px;
-    border-radius: 8px;
-    box-shadow: 0 0 15px rgba(0, 0, 0, 0.5);
-
-    width: 100%;       
-    max-width: 500px;  
-    margin: 30px auto 0 auto; 
-    box-sizing: border-box; 
-
-    min-height: 400px; 
+  background-color: rgba(0, 0, 0, 0.4);
+  padding: 20px;
+  border-radius: 8px;
+  box-shadow: 0 0 15px rgba(0, 0, 0, 0.5);
+  width: 100%;
+  max-width: 950px;
+  margin: 30px auto 0 auto;
+  box-sizing: border-box;
+  min-height: 550px;
+  max-height: 70vh;
 }
 
 .pie-chart-container canvas {

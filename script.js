@@ -46,7 +46,7 @@ document.addEventListener('DOMContentLoaded', function() {
         'sept14_20', 'sept21_27', 'sept28_oct4', 'oct5_11', 'oct12_18',
         'before_window', 'after_window', 'wont_die_young', 'already_dead'
     ];
-    
+
     const voteOptions = {
         'sept14_20': { label: 'Episode 217: Sept 14 - Sept 20' },
         'sept21_27': { label: 'Episode 218: Sept 21 - Sept 27' },
@@ -69,7 +69,7 @@ document.addEventListener('DOMContentLoaded', function() {
         voteBars[key] = document.getElementById(`bar_${key}`);
     });
 
-    const ctx = document.getElementById('votePieChart'); 
+    const ctx = document.getElementById('votePieChart');
     let voteBarChart;
 
     const chartColors = [
@@ -84,36 +84,59 @@ document.addEventListener('DOMContentLoaded', function() {
         '#808080'  // Already Dead (Gray)
     ];
 
+    // --- NEW: Global variable to store latest counts and breakpoint for responsiveness ---
+    let lastVoteCounts = {};
+    const MOBILE_BREAKPOINT_WIDTH = 768; // Adjust this width as needed
 
-    
+    // NEW: Function to get labels based on screen width
+    function getResponsiveLabels(currentWindowWidth) {
+        const originalLabels = pollOptionKeys.map(key => voteOptions[key].label);
+        if (currentWindowWidth <= MOBILE_BREAKPOINT_WIDTH) {
+            return originalLabels.map(label => {
+                if (label.startsWith('Episode') && label.includes(':')) {
+                    return label.split(':')[0].trim(); // Get text before the first colon
+                }
+                return label; // Return original for non-episode labels
+            });
+        }
+        return originalLabels; // Return original labels for wider views
+    }
+
+    // Function to render/update the Chart.js chart
     function renderChart(voteCounts) {
-        const labels = pollOptionKeys.map(key => voteOptions[key].label); 
+        const currentLabels = getResponsiveLabels(window.innerWidth); // Get labels dynamically
         const voteCountsArray = pollOptionKeys.map(optionKey => voteCounts[optionKey] || 0);
 
-        
-        if (window.voteBarChart) { 
+        // Destroy existing chart instance before creating a new one
+        if (window.voteBarChart) {
             window.voteBarChart.destroy();
         }
 
-        if (ctx) { 
+        if (ctx) {
             window.voteBarChart = new Chart(ctx, {
                 type: 'bar',
                 data: {
-                    labels: labels,
+                    labels: currentLabels, // Use the responsive labels
                     datasets: [{
-                        label: 'Number of Votes', 
+                        label: 'Number of Votes',
                         data: voteCountsArray,
-                        backgroundColor: chartColors, 
+                        backgroundColor: chartColors,
                         borderColor: 'rgba(255, 255, 255, 0.8)',
                         borderWidth: 1
                     }]
                 },
                 options: {
                     responsive: true,
-                    maintainAspectRatio: false, 
+                    maintainAspectRatio: false,
+                    indexAxis: 'y',
+                    layout: {
+                        padding: {
+                            left: 50
+                        }
+                    },
                     plugins: {
                         legend: {
-                            display: false, 
+                            display: false,
                             labels: {
                                 color: 'white'
                             }
@@ -124,34 +147,31 @@ document.addEventListener('DOMContentLoaded', function() {
                             color: '#FFD700'
                         }
                     },
-                    scales: { 
-                        x: { 
+                    scales: {
+                        x: {
                             beginAtZero: true,
                             ticks: {
                                 color: 'white',
-                                font: {
-                                    size: 12 
-                                },
-                                autoSkip: false, 
-                                maxRotation: 90, 
-                                minRotation: 45
-                            },
-                            grid: {
-                                color: 'rgba(255, 255, 255, 0.1)' 
-                            }
-                        },
-                        y: { 
-                            beginAtZero: true,
-                            ticks: {
-                                color: 'white', 
-                                callback: function(value) { 
+                                callback: function(value) {
                                     if (Number.isInteger(value)) {
                                         return value;
                                     }
                                 }
                             },
                             grid: {
-                                color: 'rgba(255, 255, 255, 0.1)' 
+                                color: 'rgba(255, 255, 255, 0.1)'
+                            }
+                        },
+                        y: {
+                            beginAtZero: true,
+                            ticks: {
+                                color: 'white',
+                                font: {
+                                    size: 14
+                                },
+                            },
+                            grid: {
+                                color: 'rgba(255, 255, 255, 0.1)'
                             }
                         }
                     }
@@ -198,6 +218,13 @@ document.addEventListener('DOMContentLoaded', function() {
             }
         });
 
+        // Store the latest counts globally
+        lastVoteCounts = counts;
+
+        // Render chart with current counts
+        renderChart(counts);
+
+        // Update vote displays and bars
         pollOptionKeys.forEach(option => {
             if (voteCountDisplays[option]) {
                 voteCountDisplays[option].textContent = counts[option];
@@ -213,10 +240,20 @@ document.addEventListener('DOMContentLoaded', function() {
             }
         });
 
-        renderChart(counts); 
-
         console.log("Vote counts updated:", counts);
     }, (error) => {
         console.error("Error getting real-time updates: ", error);
+    });
+
+    // NEW: Add a resize event listener to update chart labels on window resize
+    let resizeTimer;
+    window.addEventListener('resize', () => {
+        clearTimeout(resizeTimer);
+        resizeTimer = setTimeout(() => {
+            // Only re-render if there's existing data
+            if (Object.keys(lastVoteCounts).length > 0) {
+                renderChart(lastVoteCounts); // Re-render with stored counts
+            }
+        }, 250); // Debounce to prevent excessive calls during resizing
     });
 });
