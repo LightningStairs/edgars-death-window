@@ -184,6 +184,15 @@ blockquote footer {
   width: 0%;
 }
 
+.vote-option-button.cooldown {
+  background-color: #6B0000 !important;
+  color: #CCC !important;
+  border-color: #500000 !important;
+  opacity: 0.7;
+  cursor: not-allowed;
+  box-shadow: none;
+}
+
 .poll-visuals-container {
     margin-top: 30px; 
 }
