@@ -259,6 +259,18 @@ blockquote footer {
   display: block;
 }
 
+#death-poll-section .poll-options {
+  max-width: 500px;
+  margin-left: auto;
+  margin-right: auto;
+}
+
+#death-poll-section .vote-option-button {
+  min-width: 150px;
+  max-width: 200px;
+}
+
+
 @media (min-width: 768px) {
   .poll-visuals-container {
     display: flex;
