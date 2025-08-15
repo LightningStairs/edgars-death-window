@@ -258,3 +258,29 @@ blockquote footer {
   height: 100% !important;
   display: block;
 }
+
+@media (min-width: 768px) {
+  .poll-visuals-container {
+    display: flex;
+    justify-content: space-between;
+    align-items: flex-start;
+    gap: 30px;
+    flex-wrap: nowrap;
+    max-width: 1200px;
+  }
+
+  .poll-results {
+    width: 50%;
+    margin-top: 0;
+  }
+
+  .pie-chart-container {
+    width: 50%;
+    margin-top: 0;
+  }
+}
+
+#calendar-image {
+  max-width: 100%;
+  height: auto;
+}
