@@ -45,7 +45,7 @@ document.addEventListener("DOMContentLoaded", function () {
     updateCountdown();
   }
 
-  if (window.location.pathname.endsWith("vote.html")) {
+  if (window.location.pathname.endsWith("past-results.html")) {
     const pollOptionKeys = [
       "sept14_20",
       "sept21_27",
