@@ -344,4 +344,104 @@ document.addEventListener("DOMContentLoaded", function () {
 
     initializePollLogic();
   }
+
+  // New Poll for the Landing Page
+  if (document.getElementById("death-poll-section")) {
+    let deathPieChart;
+
+    function renderDeathPieChart(counts) {
+      const ctx = document.getElementById("deathPieChart");
+      if (!ctx) {
+        console.warn("Death poll chart canvas not found.");
+        return;
+      }
+
+      const voteCountsArray = [counts.yes || 0, counts.no || 0];
+
+      if (deathPieChart) {
+        deathPieChart.destroy();
+      }
+
+      deathPieChart = new Chart(ctx, {
+        type: "pie",
+        data: {
+          labels: ["Yes", "No"],
+          datasets: [
+            {
+              label: "Number of Votes",
+              data: voteCountsArray,
+              backgroundColor: ["#FFD700", "#CC0000"], // Gold for Yes, Red for No
+              borderColor: "rgba(0, 0, 0, 0.5)",
+              borderWidth: 2,
+            },
+          ],
+        },
+        options: {
+          responsive: true,
+          maintainAspectRatio: false,
+          plugins: {
+            legend: {
+              position: 'top',
+              labels: {
+                color: "white",
+                font: {
+                  size: 14,
+                },
+              },
+            },
+            title: {
+              display: true,
+              text: "Current Predictions",
+              color: "white",
+              font: {
+                size: 16,
+              },
+            },
+          },
+        },
+      });
+    }
+
+    const deathVoteButtons = document.querySelectorAll(".death-vote-button");
+
+    deathVoteButtons.forEach((button) => {
+      button.addEventListener("click", async () => {
+        const voteOption = button.dataset.voteOption;
+        if (voteOption && !button.disabled) {
+          try {
+            await db.collection("deathPollVotes").add({
+              timestamp: firebase.firestore.FieldValue.serverTimestamp(),
+              voteType: voteOption,
+            });
+            alert("Thank you for your vote!");
+            deathVoteButtons.forEach(btn => {
+                btn.disabled = true;
+                btn.classList.add('cooldown');
+            });
+          } catch (error) {
+            console.error("Error casting death poll vote: ", error);
+            alert("Failed to cast vote. Please try again.");
+          }
+        }
+      });
+    });
+
+    db.collection("deathPollVotes").onSnapshot(
+      (snapshot) => {
+        const counts = { yes: 0, no: 0 };
+
+        snapshot.forEach((doc) => {
+          const voteType = doc.data().voteType;
+          if (counts.hasOwnProperty(voteType)) {
+            counts[voteType]++;
+          }
+        });
+
+        renderDeathPieChart(counts);
+      },
+      (error) => {
+        console.error("Error getting death poll real-time updates: ", error);
+      }
+    );
+  }
 });
