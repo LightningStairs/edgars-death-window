@@ -49,6 +49,7 @@ a {
 }
 
 body {
+  padding-top: 75px;
   background-color: black;
   color: white;
   font-family: 'Roboto', sans-serif;
