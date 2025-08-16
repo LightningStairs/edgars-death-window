@@ -85,7 +85,6 @@ document.addEventListener("DOMContentLoaded", function () {
     let voteBarChart;
     let lastVoteCounts = {};
 
-    // Removed the getResponsiveLabels function as it's no longer needed
 
     function renderChart(counts) {
       const ctx = document.getElementById("voteBarChart");
@@ -303,7 +302,7 @@ document.addEventListener("DOMContentLoaded", function () {
 
                 if (voteBars[option]) {
                   voteBars[option].style.width = `${percentage}%`;
-                  // Set the background color here
+
                   voteBars[option].style.backgroundColor = chartColors[index];
                 }
               }
@@ -332,104 +331,174 @@ document.addEventListener("DOMContentLoaded", function () {
   }
 
   if (document.getElementById("death-poll-section")) {
-      let deathPieChart;
-      const pieChartContainer = document.querySelector('#death-poll-section .pie-chart-container');
+      let deathPieChart;
+      const pieChartContainer = document.querySelector(
+        "#death-poll-section .pie-chart-container"
+      );
 
-      function renderDeathPieChart(counts) {
-        const ctx = document.getElementById("deathPieChart");
-        if (!ctx) {
-          console.warn("Death poll chart canvas not found.");
-          return;
-        }
+      // Cooldown logic for the death poll
+      const DEATH_COOLDOWN_DURATION_MS = 45 * 60 * 1000;
+      const DEATH_LOCAL_STORAGE_KEY_PREFIX = "lastDeathVote_";
 
-        const voteCountsArray = [counts.yes || 0, counts.no || 0];
+      function setDeathButtonCooldown() {
+        const now = Date.now();
+        localStorage.setItem(
+          DEATH_LOCAL_STORAGE_KEY_PREFIX + "yes",
+          now.toString()
+        );
+        localStorage.setItem(
+          DEATH_LOCAL_STORAGE_KEY_PREFIX + "no",
+          now.toString()
+        );
+        const deathVoteButtons = document.querySelectorAll(".death-vote-button");
+        deathVoteButtons.forEach((button) => {
+          updateDeathButtonState(button, button.dataset.voteOption);
+        });
+      }
 
-        if (deathPieChart) {
-          deathPieChart.destroy();
-        }
+      function getDeathRemainingCooldown() {
+        const lastVoteTime = parseInt(
+          localStorage.getItem(DEATH_LOCAL_STORAGE_KEY_PREFIX + "yes") || "0",
+          10
+        );
+        const elapsed = Date.now() - lastVoteTime;
+        const remaining = DEATH_COOLDOWN_DURATION_MS - elapsed;
+        return remaining > 0 ? remaining : 0;
+      }
 
-        deathPieChart = new Chart(ctx, {
-          type: "pie",
-          data: {
-            labels: ["Yes", "No"],
-            datasets: [
-              {
-                label: "Number of Votes",
-                data: voteCountsArray,
-                backgroundColor: ["#FFD700", "#CC0000"], // Gold for Yes, Red for No
-                borderColor: "rgba(0, 0, 0, 0.5)",
-                borderWidth: 2,
-              },
-            ],
-          },
-          options: {
-            responsive: true,
-            maintainAspectRatio: false,
-            plugins: {
-              legend: {
-                position: 'top',
-                labels: {
-                  color: "white",
-                  font: {
-                    size: 14,
-                  },
-                },
-              },
-              title: {
-                display: false,
-              },
-            },
-          },
-        });
-      }
+      function updateDeathButtonState(button, voteOption) {
+        const remaining = getDeathRemainingCooldown(voteOption);
 
-      const deathVoteButtons = document.querySelectorAll(".death-vote-button");
+        if (remaining > 0) {
+          button.disabled = true;
+          button.classList.add("cooldown");
+          const minutes = Math.ceil(remaining / (1000 * 60));
+        } else {
+          button.disabled = false;
+          button.classList.remove("cooldown");
+        }
+      }
 
-      deathVoteButtons.forEach((button) => {
-        button.addEventListener("click", async () => {
-          const voteOption = button.dataset.voteOption;
-          if (voteOption && !button.disabled) {
-            try {
-              await db.collection("deathPollVotes").add({
-                timestamp: firebase.firestore.FieldValue.serverTimestamp(),
-                voteType: voteOption,
-              });
-              alert("Thank you for your vote!");
-                pieChartContainer.style.display = 'block';
-              deathVoteButtons.forEach(btn => {
-                  btn.disabled = true;
-                  btn.classList.add('cooldown');
-              });
-            } catch (error) {
-              console.error("Error casting death poll vote: ", error);
-              alert("Failed to cast vote. Please try again.");
-            }
-          }
-        });
-      });
+      function initializeDeathPollLogic() {
+        const deathVoteButtons = document.querySelectorAll(".death-vote-button");
 
-      db.collection("deathPollVotes").onSnapshot(
-        (snapshot) => {
-          const counts = { yes: 0, no: 0 };
-          let totalVotes = 0;
+        deathVoteButtons.forEach((button) => {
+          const voteOption = button.dataset.voteOption;
+          updateDeathButtonState(button, voteOption);
+        });
 
-          snapshot.forEach((doc) => {
-            const voteType = doc.data().voteType;
-            if (counts.hasOwnProperty(voteType)) {
-              counts[voteType]++;
-              totalVotes++;
-            }
-          });
+        if (window._deathCooldownInterval) {
+          clearInterval(window._deathCooldownInterval);
+        }
+        window._deathCooldownInterval = setInterval(() => {
+          deathVoteButtons.forEach((button) => {
+            const voteOption = button.dataset.voteOption;
+            updateDeathButtonState(button, voteOption);
+          });
+        }, 10 * 1000);
 
-          if (totalVotes > 0) {
-            pieChartContainer.style.display = 'block';
+        deathVoteButtons.forEach((button) => {
+          const oldListener = button._chartClickListener;
+          if (oldListener) {
+            button.removeEventListener("click", oldListener);
           }
 
-          renderDeathPieChart(counts);
-        },
-        (error) => {
-          console.error("Error getting death poll real-time updates: ", error);
-        }
-      );
-    }
+          const newListener = async () => {
+            const voteOption = button.dataset.voteOption;
+            if (voteOption && !button.disabled) {
+              try {
+                await db.collection("deathPollVotes").add({
+                  timestamp: firebase.firestore.FieldValue.serverTimestamp(),
+                  voteType: voteOption,
+                });
+                alert("Thank you for your vote!");
+                setDeathButtonCooldown();
+              } catch (error) {
+                console.error("Error casting death poll vote: ", error);
+                alert("Failed to cast vote. Please try again.");
+              }
+            }
+          };
+          button.addEventListener("click", newListener);
+          button._chartClickListener = newListener;
+        });
+      }
+
+      function renderDeathPieChart(counts) {
+        const ctx = document.getElementById("deathPieChart");
+        if (!ctx) {
+          console.warn("Death poll chart canvas not found.");
+          return;
+        }
+
+        const voteCountsArray = [counts.yes || 0, counts.no || 0];
+
+        if (deathPieChart) {
+          deathPieChart.destroy();
+        }
+
+        deathPieChart = new Chart(ctx, {
+          type: "pie",
+          data: {
+            labels: ["Yes", "No"],
+            datasets: [
+              {
+                label: "Number of Votes",
+                data: voteCountsArray,
+                backgroundColor: ["#FFD700", "#CC0000"],
+                borderColor: "rgba(0, 0, 0, 0.5)",
+                borderWidth: 2,
+              },
+            ],
+          },
+          options: {
+            responsive: true,
+            maintainAspectRatio: false,
+            plugins: {
+              legend: {
+                position: "top",
+                labels: {
+                  color: "white",
+                  font: {
+                    size: 14,
+                  },
+                },
+              },
+              title: {
+                display: false,
+              },
+            },
+          },
+        });
+      }
+
+      db.collection("deathPollVotes").onSnapshot(
+        (snapshot) => {
+          const counts = {
+            yes: 0,
+            no: 0,
+          };
+          let totalVotes = 0;
+
+          snapshot.forEach((doc) => {
+            const voteType = doc.data().voteType;
+            if (counts.hasOwnProperty(voteType)) {
+              counts[voteType]++;
+              totalVotes++;
+            }
+          });
+
+          if (totalVotes > 0) {
+            pieChartContainer.style.display = "block";
+          }
+
+          renderDeathPieChart(counts);
+        },
+        (error) => {
+          console.error("Error getting death poll real-time updates: ", error);
+        }
+      );
+
+      initializeDeathPollLogic();
+    }
 });
