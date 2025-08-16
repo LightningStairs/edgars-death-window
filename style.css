@@ -49,6 +49,7 @@ a {
 }
 
 body {
+  padding-top: 75px;
   background-color: black;
   color: white;
   font-family: 'Roboto', sans-serif;
@@ -241,7 +242,6 @@ blockquote footer {
 }
 
 .pie-chart-container {
-  display: none;
   background-color: rgba(0, 0, 0, 0.4);
   padding: 20px;
   border-radius: 8px;
