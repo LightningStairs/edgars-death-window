@@ -86,6 +86,15 @@ document.addEventListener("DOMContentLoaded", function () {
       });
       lastVoteCounts = counts;
       renderBarChart(counts);
+
+      const summaryElement = document.getElementById('prediction-summary');
+      if (summaryElement && totalVotes > 0) {
+        const winningOptionKey = Object.keys(counts).reduce((a, b) => counts[a] > counts[b] ? a : b);
+        const winningLabel = voteOptions[winningOptionKey].label;
+        const winningVotes = counts[winningOptionKey];
+        summaryElement.innerHTML = `<strong>Top Prediction:</strong><br>${winningLabel} (${winningVotes} of ${totalVotes} votes)`;
+      }
+
       pollOptionKeys.forEach((option, index) => {
         const countDisplay = document.getElementById(`count_${option}`);
         const percentDisplay = document.getElementById(`percent_${option}`);
@@ -124,11 +133,25 @@ document.addEventListener("DOMContentLoaded", function () {
 
     db.collection("deathPollVotes").onSnapshot((snapshot) => {
       const counts = { yes: 0, no: 0 };
+      let totalVotes = 0;
       snapshot.forEach((doc) => {
         const voteType = doc.data().voteType;
-        if (counts.hasOwnProperty(voteType)) counts[voteType]++;
+        if (counts.hasOwnProperty(voteType)) {
+          counts[voteType]++;
+          totalVotes++;
+        }
       });
       renderDeathPieChart(counts);
+
+      const summaryElement = document.getElementById('aneurysm-summary');
+      if(summaryElement && totalVotes > 0) {
+        const yesPercent = ((counts.yes / totalVotes) * 100).toFixed(1);
+        const noPercent = ((counts.no / totalVotes) * 100).toFixed(1);
+        summaryElement.innerHTML = `
+          <strong>Yes:</strong> ${counts.yes} votes (${yesPercent}%)<br>
+          <strong>No:</strong> ${counts.no} votes (${noPercent}%)
+        `;
+      }
     });
   }
 

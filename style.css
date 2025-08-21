@@ -243,15 +243,23 @@ blockquote footer {
 
 .pie-chart-container {
   background-color: rgba(0, 0, 0, 0.4);
-  padding: 1px;
+  padding: 20px;
   border-radius: 8px;
   box-shadow: 0 0 15px rgba(0, 0, 0, 0.5);
   width: 100%;
   margin: 0px auto 0 auto;
-  max-width: 1000px; /* Increased the max-width to allow the chart to be larger */
+  max-width: 1000px;
   box-sizing: border-box;
   min-height: 550px;
   max-height: 100vh;
+}
+
+.poll-summary-text {
+  color: #FFD700;
+  margin-bottom: 15px;
+  font-size: 1.1em;
+  line-height: 1.5;
+  text-align: center;
 }
 
 #deathPieChart {
@@ -260,7 +268,7 @@ blockquote footer {
 
 .pie-chart-container canvas {
   width: 100% !important;
-  height: 100% !important;
+  height: auto !important;
   display: block;
 }
 
@@ -285,18 +293,18 @@ blockquote footer {
     display: flex;
     justify-content: space-between;
     align-items: flex-start;
-    gap: 10px;
+    gap: 20px;
     flex-wrap: nowrap;
     max-width: 1200px;
   }
 
   .poll-results {
-    width: 90%;
+    width: 50%;
     margin-top: 0;
   }
 
   .pie-chart-container {
-    width: 90%;
+    width: 50%;
     margin-top: 0;
   }
 }
