@@ -262,6 +262,11 @@ blockquote footer {
   text-align: center;
 }
 
+.poll-results .poll-summary-text {
+    text-align: left;
+    padding: 0 10px;
+}
+
 #deathPieChart {
   height: 550px;
 }
