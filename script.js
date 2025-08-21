@@ -162,7 +162,8 @@ document.addEventListener("DOMContentLoaded", function () {
       latvia_mike_edgar: "Latvia Mike's Edgar",
       latvia_michael_edgar: "Latvia Michael's Edgar",
       mustardseed: "Mustardseed",
-      ovedgar: "OvEdgar"
+      ovedgar: "OvEdgar",
+      none: "None"
     };
     const curedPollKeys = Object.keys(curedPollOptions);
     const resultsContainer = document.querySelector('.cured-poll-results');
