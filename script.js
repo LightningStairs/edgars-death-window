@@ -59,11 +59,11 @@ document.addEventListener("DOMContentLoaded", function () {
     ];
 
     const voteOptions = {
-      sept14_20: { label: "Episode 217" },
-      sept21_27: { label: "Episode 218" },
-      sept28_oct4: { label: "Episode 219" },
-      oct5_11: { label: "Episode 220" },
-      oct12_18: { label: "Episode 221" },
+      sept14_20: { label: "Episode 217: Sept 14 2025 - Sept 20 2025" },
+      sept21_27: { label: "Episode 218: Sept 21 2025 - Sept 27 2025" },
+      sept28_oct4: { label: "Episode 219: Sept 28 2025 - Oct 4 2025" },
+      oct5_11: { label: "Episode 220: Oct 5 2025 - Oct 11 2025" },
+      oct12_18: { label: "Episode 221: Oct 12 2025 - Oct 18 2025" },
       before_window: { label: "Before Window" },
       after_window: { label: "After Window" },
       wont_die_young: { label: "Won't Die Young" },
@@ -104,7 +104,7 @@ document.addEventListener("DOMContentLoaded", function () {
       voteBarChart = new Chart(ctx, {
         type: "bar",
         data: {
-          labels: pollOptionKeys.map((key) => voteOptions[key].label),
+          labels: pollOptionKeys.map((key) => voteOptions[key].label.split(':')[0]), // Use shorter labels for chart
           datasets: [
             {
               label: "Number of Votes",
@@ -192,27 +192,34 @@ document.addEventListener("DOMContentLoaded", function () {
     }
 
     function updateButtonState(button, voteOption) {
-      const originalText = voteOptions[voteOption].label;
-      const remaining = getRemainingCooldown(voteOption);
+        if (!voteOptions[voteOption]) return; // Safeguard
+        const originalText = voteOptions[voteOption].label;
+        const remaining = getRemainingCooldown(voteOption);
 
-      if (remaining > 0) {
-        button.disabled = true;
-        button.classList.add("cooldown");
-        const minutes = Math.ceil(remaining / (1000 * 60));
-        button.textContent = originalText;
-      } else {
-        button.disabled = false;
-        button.classList.remove("cooldown");
-        button.textContent = originalText;
-      }
+        if (remaining > 0) {
+            button.disabled = true;
+            button.classList.add("cooldown");
+            button.textContent = originalText;
+        } else {
+            // Since voting is closed, we keep them disabled.
+            // If you want to re-enable voting, remove the disabled attribute from the HTML
+            // and uncomment the next two lines.
+            // button.disabled = false;
+            // button.classList.remove("cooldown");
+            button.textContent = originalText;
+        }
     }
 
     function initializePollLogic() {
-      const voteButtons = document.querySelectorAll(".vote-option-button");
+      // THIS IS THE FIX: Select only the buttons for the first poll
+      const voteButtons = document.querySelectorAll(".vote-option-button:not(.death-vote-button)");
 
       voteButtons.forEach((button) => {
         const voteOption = button.dataset.voteOption;
-        updateButtonState(button, voteOption);
+        if(voteOption && voteOptions[voteOption]){
+            updateButtonState(button, voteOption);
+            button.textContent = voteOptions[voteOption].label;
+        }
       });
 
       if (window._cooldownInterval) {
@@ -221,7 +228,9 @@ document.addEventListener("DOMContentLoaded", function () {
       window._cooldownInterval = setInterval(() => {
         voteButtons.forEach((button) => {
           const voteOption = button.dataset.voteOption;
-          updateButtonState(button, voteOption);
+           if(voteOption && voteOptions[voteOption]){
+              updateButtonState(button, voteOption);
+           }
         });
       }, 10 * 1000);
 
@@ -336,7 +345,6 @@ document.addEventListener("DOMContentLoaded", function () {
         "#death-poll-section .pie-chart-container"
       );
 
-      // Cooldown logic for the death poll
       const DEATH_COOLDOWN_DURATION_MS = 45 * 60 * 1000;
       const DEATH_LOCAL_STORAGE_KEY_PREFIX = "lastDeathVote_";
 
@@ -367,15 +375,13 @@ document.addEventListener("DOMContentLoaded", function () {
       }
 
       function updateDeathButtonState(button, voteOption) {
-        const remaining = getDeathRemainingCooldown(voteOption);
+        const remaining = getDeathRemainingCooldown();
 
         if (remaining > 0) {
           button.disabled = true;
           button.classList.add("cooldown");
-          const minutes = Math.ceil(remaining / (1000 * 60));
         } else {
-          button.disabled = false;
-          button.classList.remove("cooldown");
+            // Voting is closed, so keep disabled.
         }
       }
 
