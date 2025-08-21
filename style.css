@@ -275,6 +275,10 @@ blockquote footer {
   max-width: 200px;
 }
 
+#cured-poll-section {
+    margin-top: 40px;
+}
+
 
 @media (min-width: 768px) {
   .poll-visuals-container {
