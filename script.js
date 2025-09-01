@@ -233,7 +233,9 @@ document.addEventListener("DOMContentLoaded", function () {
       fine_cured: "Be fine! he's cured, actually",
       die_with_mike: "Die with Mike by his side",
       die_without_mike: "Die without Mike by his side",
-      edited: "Be chimerically edited into a younger or cured Edgar"
+      edited: "Be chimerically edited into a younger or cured Edgar",
+      missing: "Go missing",
+      survive: "Survive the aneurysm and live with a disability"
     };
     const pollKeys = Object.keys(pollOptions);
     const resultsContainer = document.querySelector('.latvia-edgar-poll-results');
