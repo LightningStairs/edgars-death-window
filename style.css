@@ -241,15 +241,17 @@ blockquote footer {
   box-sizing: border-box;
 }
 
-.pie-chart-container {
+.pie-chart-container, .poll-summary-container {
   background-color: rgba(0, 0, 0, 0.4);
   padding: 20px;
   border-radius: 8px;
   box-shadow: 0 0 15px rgba(0, 0, 0, 0.5);
   width: 100%;
-  margin: 0px auto 0 auto;
-  max-width: 1000px;
+  margin: 20px auto 0 auto;
   box-sizing: border-box;
+}
+
+.pie-chart-container {
   min-height: 550px;
   max-height: 100vh;
 }
@@ -261,6 +263,15 @@ blockquote footer {
   line-height: 1.5;
   text-align: center;
 }
+
+.summary-lead-title {
+  display: block;
+  font-size: 1.3em;
+  font-weight: bold;
+  color: #FFFFFF;
+  margin-bottom: 10px;
+}
+
 
 .poll-results .poll-summary-text {
     text-align: left;
@@ -308,7 +319,7 @@ blockquote footer {
     margin-top: 0;
   }
 
-  .pie-chart-container {
+  .pie-chart-container, .poll-summary-container {
     width: 50%;
     margin-top: 0;
   }

@@ -229,13 +229,15 @@ document.addEventListener("DOMContentLoaded", function () {
 
   if (document.getElementById("latvia-edgar-poll-section")) {
     const pollOptions = {
-      fine_storage: "be fine! Mike put him in storage",
-      fine_cured: "be fine! he's cured, actually",
-      die_with_mike: "die with Mike by his side",
-      die_without_mike: "die without Mike by his side"
+      fine_storage: "Be fine! Mike put him in storage",
+      fine_cured: "Be fine! he's cured, actually",
+      die_with_mike: "Die with Mike by his side",
+      die_without_mike: "Die without Mike by his side"
     };
     const pollKeys = Object.keys(pollOptions);
     const resultsContainer = document.querySelector('.latvia-edgar-poll-results');
+    const summaryElement = document.getElementById('latvia-edgar-summary');
+
 
     function updateButtonStates() {
       if (localStorage.getItem('voted_latvia_edgar_poll')) {
@@ -274,6 +276,16 @@ document.addEventListener("DOMContentLoaded", function () {
           totalVotes++;
         }
       });
+
+      if (summaryElement && totalVotes > 0) {
+          const winningOptionKey = Object.keys(counts).reduce((a, b) => counts[a] > counts[b] ? a : b);
+          const winningLabel = pollOptions[winningOptionKey];
+          const winningVotes = counts[winningOptionKey];
+          summaryElement.innerHTML = `<span class="summary-lead-title">In the Lead:</span>${winningLabel}<br>(${winningVotes} of ${totalVotes} votes)`;
+      } else if (summaryElement) {
+          summaryElement.innerHTML = 'No votes yet!';
+      }
+
 
       resultsContainer.innerHTML = `<h3 style="font-size: 1.3em; color: white; margin-bottom: 15px; text-align: center; text-shadow: 0 0 8px rgba(255, 215, 0, 0.5);">Current Results:</h3>`;
 
