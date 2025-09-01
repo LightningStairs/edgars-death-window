@@ -232,8 +232,12 @@ document.addEventListener("DOMContentLoaded", function () {
           totalVotes++;
         }
       });
-      resultsContainer.innerHTML = `<h3 style="font-size: 1.3em; color: white; margin-bottom: 15px; text-align: center; text-shadow: 0 0 8px rgba(255, 215, 0, 0.5);">Current Results:</h3>`;
-      curedPollKeys.forEach(key => {
+
+      const sortedKeys = Object.keys(counts).sort((a, b) => counts[b] - counts[a]);
+
+      resultsContainer.innerHTML = `<h3 style="font-size: 1.3em; color: white; margin-bottom: 15px; text-align: center; text-shadow: 0 0 8px rgba(255, 215, 0, 0.5);">Final Results:</h3>`;
+
+      sortedKeys.forEach(key => {
         const percentage = totalVotes > 0 ? ((counts[key] / totalVotes) * 100).toFixed(1) : 0;
         const resultItem = document.createElement('div');
         resultItem.classList.add('poll-result-item');
