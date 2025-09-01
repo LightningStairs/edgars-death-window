@@ -194,33 +194,6 @@ document.addEventListener("DOMContentLoaded", function () {
     const curedPollKeys = Object.keys(curedPollOptions);
     const resultsContainer = document.querySelector('.cured-poll-results');
 
-    function updateButtonStates() {
-      curedPollKeys.forEach(key => {
-        const button = document.querySelector(`.cured-vote-button[data-vote-option="${key}"]`);
-        if (button && localStorage.getItem(`voted_cured_${key}`)) {
-          button.disabled = true;
-          button.classList.add('cooldown');
-        }
-      });
-    }
-
-    function handleVote(e) {
-      const voteOption = e.target.dataset.voteOption;
-      if (voteOption && !e.target.disabled) {
-        db.collection("curedPollVotes").add({
-          timestamp: firebase.firestore.FieldValue.serverTimestamp(),
-          voteType: voteOption,
-        }).then(() => {
-          localStorage.setItem(`voted_cured_${voteOption}`, 'true');
-          updateButtonStates();
-        }).catch(error => console.error("Error casting vote: ", error));
-      }
-    }
-
-    document.querySelectorAll('.cured-vote-button').forEach(button => {
-      button.addEventListener('click', handleVote);
-    });
-
     db.collection("curedPollVotes").onSnapshot(snapshot => {
       const counts = {};
       curedPollKeys.forEach(key => counts[key] = 0);
@@ -243,6 +216,85 @@ document.addEventListener("DOMContentLoaded", function () {
         resultItem.classList.add('poll-result-item');
         resultItem.innerHTML = `
           <div class="poll-label">${curedPollOptions[key]}: <span class="vote-count-display">${counts[key]}</span></div>
+          <div class="poll-visual-data">
+              <span class="vote-percentage">(${percentage}%)</span>
+              <div class="vote-bar-container">
+                  <div class="vote-bar-fill" style="width: ${percentage}%; background-color: #4169E1;"></div>
+              </div>
+          </div>`;
+        resultsContainer.appendChild(resultItem);
+      });
+    });
+  }
+
+  if (document.getElementById("latvia-edgar-poll-section")) {
+    const pollOptions = {
+      fine_storage: "Be fine! Mike put him in storage",
+      fine_cured: "Be fine! he's cured, actually",
+      die_with_mike: "Die with Mike by his side",
+      die_without_mike: "Die without Mike by his side"
+    };
+    const pollKeys = Object.keys(pollOptions);
+    const resultsContainer = document.querySelector('.latvia-edgar-poll-results');
+    const summaryElement = document.getElementById('latvia-edgar-summary');
+
+
+    function updateButtonStates() {
+      if (localStorage.getItem('voted_latvia_edgar_poll')) {
+        document.querySelectorAll('.latvia-edgar-vote-button').forEach(button => {
+          button.disabled = true;
+          button.classList.add('cooldown');
+        });
+      }
+    }
+
+    function handleVote(e) {
+      const voteOption = e.target.dataset.voteOption;
+      if (voteOption && !e.target.disabled) {
+        db.collection("latviaEdgarPollVotes").add({
+          timestamp: firebase.firestore.FieldValue.serverTimestamp(),
+          voteType: voteOption,
+        }).then(() => {
+          localStorage.setItem('voted_latvia_edgar_poll', 'true');
+          updateButtonStates();
+        }).catch(error => console.error("Error casting vote: ", error));
+      }
+    }
+
+    document.querySelectorAll('.latvia-edgar-vote-button').forEach(button => {
+      button.addEventListener('click', handleVote);
+    });
+
+    db.collection("latviaEdgarPollVotes").onSnapshot(snapshot => {
+      const counts = {};
+      pollKeys.forEach(key => counts[key] = 0);
+      let totalVotes = 0;
+      snapshot.forEach(doc => {
+        const voteType = doc.data().voteType;
+        if (counts.hasOwnProperty(voteType)) {
+          counts[voteType]++;
+          totalVotes++;
+        }
+      });
+
+      if (summaryElement && totalVotes > 0) {
+          const winningOptionKey = Object.keys(counts).reduce((a, b) => counts[a] > counts[b] ? a : b);
+          const winningLabel = pollOptions[winningOptionKey];
+          const winningVotes = counts[winningOptionKey];
+          summaryElement.innerHTML = `<span class="summary-lead-title">In the Lead:</span>${winningLabel}<br>(${winningVotes} of ${totalVotes} votes)`;
+      } else if (summaryElement) {
+          summaryElement.innerHTML = 'No votes yet!';
+      }
+
+
+      resultsContainer.innerHTML = `<h3 style="font-size: 1.3em; color: white; margin-bottom: 15px; text-align: center; text-shadow: 0 0 8px rgba(255, 215, 0, 0.5);">Current Results:</h3>`;
+
+      pollKeys.forEach(key => {
+        const percentage = totalVotes > 0 ? ((counts[key] / totalVotes) * 100).toFixed(1) : 0;
+        const resultItem = document.createElement('div');
+        resultItem.classList.add('poll-result-item');
+        resultItem.innerHTML = `
+          <div class="poll-label">${pollOptions[key]}: <span class="vote-count-display">${counts[key]}</span></div>
           <div class="poll-visual-data">
               <span class="vote-percentage">(${percentage}%)</span>
               <div class="vote-bar-container">
