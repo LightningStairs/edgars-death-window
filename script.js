@@ -20,11 +20,19 @@ document.addEventListener("DOMContentLoaded", function () {
     function updateCountdown() {
       const now = new Date().getTime();
       if (now > windowEndDate) {
-        countdownElement.innerHTML = "EDGAR'S DEATH DATE WINDOW HAS CLOSED";
+        countdownElement.innerHTML = `THE DEATH DATE WINDOW HAS CLOSED<br><span style="font-size: 0.5em;">If that twink ain't dead there's games afoot</span>`;
         countdownElement.style.color = "LightBlue";
         countdownElement.style.textShadow = "0 0 10px rgba(173, 216, 230, 0.7)";
       } else if (now >= countdownTargetDate && now <= windowEndDate) {
-        countdownElement.innerHTML = "WE ARE IN EDGAR'S DEATH DATE WINDOW";
+        // Calculate time until the window closes
+        const distanceToEnd = windowEndDate - now;
+        const days = Math.floor(distanceToEnd / (1000 * 60 * 60 * 24));
+        const hours = Math.floor((distanceToEnd % (1000 * 60 * 60 * 24)) / (1000 * 60 * 60));
+        const minutes = Math.floor((distanceToEnd % (1000 * 60 * 60)) / (1000 * 60));
+        const seconds = Math.floor((distanceToEnd % (1000 * 60)) / 1000);
+
+        // Display both the message and the remaining time
+        countdownElement.innerHTML = `WE ARE IN EDGAR'S DEATH DATE WINDOW<br><span style="font-size: 0.5em;">Closes in: ${days}d ${hours}h ${minutes}m ${seconds}s</span>`;
         countdownElement.style.color = "red";
         countdownElement.style.textShadow = "0 0 10px rgba(255, 0, 0, 0.7)";
 
