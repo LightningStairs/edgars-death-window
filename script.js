@@ -12,20 +12,55 @@ document.addEventListener("DOMContentLoaded", function () {
   const db = firebase.firestore();
 
   const countdownElement = document.getElementById("countdown");
+  const oneWeekWarningElement = document.getElementById("one-week-warning");
+
   if (countdownElement) {
     const countdownTargetDate = new Date("September 16, 2025 00:00:00").getTime();
     const windowEndDate = new Date("October 15, 2025 23:59:59").getTime();
     let confettiFired = false; // Flag to ensure confetti fires only once
 
     function updateCountdown() {
-      const now = new Date().getTime();
-      if (now > windowEndDate) {
+      const now = new Date();
+      const now_time = now.getTime();
+      const year = now.getFullYear();
+      const month = now.getMonth(); // 8 = September
+      const day = now.getDate();
+
+      let warningText = ""; // Default to empty
+
+      // Set warning text based on the date in September 2025
+      if (year === 2025 && month === 8) {
+        if (day === 9) {
+            warningText = "One Week to Go!";
+        } else if (day >= 10 && day <= 14) {
+            warningText = "Less Than a Week to Go!";
+        } else if (day === 15) {
+            warningText = "The Window Opens Tomorrow";
+        }
+      }
+
+      // Display the warning text if it's set
+      if (oneWeekWarningElement) {
+        if (warningText) {
+            oneWeekWarningElement.innerHTML = warningText;
+            oneWeekWarningElement.style.color = "red";
+            oneWeekWarningElement.style.fontSize = "2.5em";
+            oneWeekWarningElement.style.fontFamily = "'FFF Forward', Arial, sans-serif";
+            oneWeekWarningElement.style.textShadow = "0 0 10px rgba(255, 0, 0, 0.7)";
+            oneWeekWarningElement.style.marginBottom = "20px";
+        } else {
+            oneWeekWarningElement.innerHTML = "";
+            oneWeekWarningElement.style.marginBottom = "0px";
+        }
+      }
+
+      if (now_time > windowEndDate) {
         countdownElement.innerHTML = `THE DEATH DATE WINDOW HAS CLOSED<br><span style="font-size: 0.5em;">If that twink ain't dead there's games afoot</span>`;
         countdownElement.style.color = "LightBlue";
         countdownElement.style.textShadow = "0 0 10px rgba(173, 216, 230, 0.7)";
-      } else if (now >= countdownTargetDate && now <= windowEndDate) {
+      } else if (now_time >= countdownTargetDate && now_time <= windowEndDate) {
         // Calculate time until the window closes
-        const distanceToEnd = windowEndDate - now;
+        const distanceToEnd = windowEndDate - now_time;
         const days = Math.floor(distanceToEnd / (1000 * 60 * 60 * 24));
         const hours = Math.floor((distanceToEnd % (1000 * 60 * 60 * 24)) / (1000 * 60 * 60));
         const minutes = Math.floor((distanceToEnd % (1000 * 60 * 60)) / (1000 * 60));
@@ -61,7 +96,7 @@ document.addEventListener("DOMContentLoaded", function () {
           confettiFired = true; // Set flag to true
         }
       } else {
-        const distance = countdownTargetDate - now;
+        const distance = countdownTargetDate - now_time;
         const days = Math.floor(distance / (1000 * 60 * 60 * 24));
         const hours = Math.floor((distance % (1000 * 60 * 60 * 24)) / (1000 * 60 * 60));
         const minutes = Math.floor((distance % (1000 * 60 * 60)) / (1000 * 60));
