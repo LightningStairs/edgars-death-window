@@ -80,6 +80,13 @@ h1 {
   text-shadow: 0 0 15px rgba(255, 255, 255, 0.5);
 }
 
+.countdown-container {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  gap: 20px;
+}
+
 #countdown {
   font-family: 'Lucida Console', 'Courier New', monospace;
   font-size: 4.2em;
@@ -87,6 +94,15 @@ h1 {
   margin-bottom: 50px;
   color: white;
   text-shadow: 0 0 15px rgba(255, 255, 255, 0.7);
+}
+
+.countdown-gif {
+  width: 150px;
+  height: auto;
+}
+
+.hidden {
+  display: none;
 }
 
 blockquote {

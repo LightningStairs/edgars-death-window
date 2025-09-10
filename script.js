@@ -15,6 +15,9 @@ document.addEventListener("DOMContentLoaded", function () {
   const oneWeekWarningElement = document.getElementById("one-week-warning");
 
   if (countdownElement) {
+    const gifLeft = document.getElementById("gif-left");
+    const gifRight = document.getElementById("gif-right");
+
     function launchFireworks() {
       var duration = 5 * 1000;
       var end = Date.now() + duration;
@@ -51,6 +54,15 @@ document.addEventListener("DOMContentLoaded", function () {
       const year = now.getFullYear();
       const month = now.getMonth();
       const day = now.getDate();
+
+      // Logic to show/hide the GIF on Sept 15, 2025
+      if (year === 2025 && month === 8 && day === 10) {
+        gifLeft.classList.remove("hidden");
+        gifRight.classList.remove("hidden");
+      } else {
+        gifLeft.classList.add("hidden");
+        gifRight.classList.add("hidden");
+      }
 
       let warningText = "";
 
@@ -132,7 +144,7 @@ document.addEventListener("DOMContentLoaded", function () {
             });
           }, 250);
 
-          confettiFired = true; 
+          confettiFired = true;
         }
       } else {
         const distance = countdownTargetDate - now_time;
