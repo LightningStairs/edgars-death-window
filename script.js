@@ -55,8 +55,7 @@ document.addEventListener("DOMContentLoaded", function () {
       const month = now.getMonth();
       const day = now.getDate();
 
-      // Logic to show/hide the GIF on Sept 15, 2025
-      if (year === 2025 && month === 8 && day === 10) {
+      if (year === 2025 && month === 8 && day === 15) {
         gifLeft.classList.remove("hidden");
         gifRight.classList.remove("hidden");
       } else {
