@@ -55,7 +55,7 @@ document.addEventListener("DOMContentLoaded", function () {
       const month = now.getMonth();
       const day = now.getDate();
 
-      if (year === 2025 && month === 8 && day === 15) {
+      if (year === 2025 && month === 9 && day >= 15) {
         gifLeft.classList.remove("hidden");
         gifRight.classList.remove("hidden");
       } else {
@@ -422,37 +422,6 @@ document.addEventListener("DOMContentLoaded", function () {
     );
     const summaryElement = document.getElementById("latvia-edgar-summary");
 
-    function updateButtonStates() {
-      if (localStorage.getItem("voted_latvia_edgar_poll")) {
-        document
-          .querySelectorAll(".latvia-edgar-vote-button")
-          .forEach((button) => {
-            button.disabled = true;
-            button.classList.add("cooldown");
-          });
-      }
-    }
-
-    function handleVote(e) {
-      const voteOption = e.target.dataset.voteOption;
-      if (voteOption && !e.target.disabled) {
-        db.collection("latviaEdgarPollVotes")
-          .add({
-            timestamp: firebase.firestore.FieldValue.serverTimestamp(),
-            voteType: voteOption,
-          })
-          .then(() => {
-            localStorage.setItem("voted_latvia_edgar_poll", "true");
-            updateButtonStates();
-          })
-          .catch((error) => console.error("Error casting vote: ", error));
-      }
-    }
-
-    document.querySelectorAll(".latvia-edgar-vote-button").forEach((button) => {
-      button.addEventListener("click", handleVote);
-    });
-
     db.collection("latviaEdgarPollVotes").onSnapshot((snapshot) => {
       const counts = {};
       pollKeys.forEach((key) => (counts[key] = 0));
@@ -471,12 +440,12 @@ document.addEventListener("DOMContentLoaded", function () {
         );
         const winningLabel = pollOptions[winningOptionKey];
         const winningVotes = counts[winningOptionKey];
-        summaryElement.innerHTML = `<span class="summary-lead-title">In the Lead:</span>${winningLabel}<br>(${winningVotes} of ${totalVotes} votes)`;
+        summaryElement.innerHTML = `<span class="summary-lead-title">Top Prediction:</span>${winningLabel}<br>(${winningVotes} of ${totalVotes} votes)`;
       } else if (summaryElement) {
         summaryElement.innerHTML = "No votes yet!";
       }
 
-      resultsContainer.innerHTML = `<h3 style="font-size: 1.3em; color: white; margin-bottom: 15px; text-align: center; text-shadow: 0 0 8px rgba(255, 215, 0, 0.5);">Current Results:</h3>`;
+      resultsContainer.innerHTML = `<h3 style="font-size: 1.3em; color: white; margin-bottom: 15px; text-align: center; text-shadow: 0 0 8px rgba(255, 215, 0, 0.5);">Final Results:</h3>`;
 
       pollKeys.forEach((key) => {
         const percentage =
@@ -496,7 +465,5 @@ document.addEventListener("DOMContentLoaded", function () {
         resultsContainer.appendChild(resultItem);
       });
     });
-
-    updateButtonStates();
   }
 });
