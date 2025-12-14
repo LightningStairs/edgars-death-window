@@ -5,162 +5,152 @@ document.addEventListener("DOMContentLoaded", function () {
     projectId: "edgardeathwindowvotes",
     storageBucket: "edgardeathwindowvotes.firebasestorage.app",
     messagingSenderId: "664396069532",
-    appId: "1:664396069532:web:8be4ca0d64db46ed290b59",
+    appId: "1:664396069532:web:8be4ca0d64db466ed290b59",
   };
 
   firebase.initializeApp(firebaseConfig);
   const db = firebase.firestore();
 
-  const countdownElement = document.getElementById("countdown");
-  const oneWeekWarningElement = document.getElementById("one-week-warning");
+  // --- Died Counter Elements ---
+  const diedDaysElement = document.getElementById("died-days");
+  const diedHoursElement = document.getElementById("died-hours");
+  const diedMinutesElement = document.getElementById("died-minutes");
+  const diedSecondsElement = document.getElementById("died-seconds");
+  
+  // --- Cured Counter Elements ---
+  const curedDaysElement = document.getElementById("cured-days");
+  const curedHoursElement = document.getElementById("cured-hours");
+  const curedMinutesElement = document.getElementById("cured-minutes");
+  const curedSecondsElement = document.getElementById("cured-seconds");
 
-  if (countdownElement) {
-    const gifLeft = document.getElementById("gif-left");
-    const gifRight = document.getElementById("gif-right");
+  // Constants for Date Calculations
+  const diedDate = new Date("September 16, 2025 00:00:00 EST");
+  const curedDate = new Date("December 10, 2025 00:00:00 EST");
+  
+  const ONE_SECOND = 1000;
+  const ONE_MINUTE = ONE_SECOND * 60;
+  const ONE_HOUR = ONE_MINUTE * 60;
+  const ONE_DAY = ONE_HOUR * 24;
 
-    function launchFireworks() {
-      var duration = 5 * 1000;
-      var end = Date.now() + duration;
+  /**
+   * Calculates and updates the time difference between now and a start date.
+   * @param {Date} startDate The date to count since.
+   * @param {HTMLElement} daysEl Element to display days.
+   * @param {HTMLElement} hoursEl Element to display hours.
+   * @param {HTMLElement} minutesEl Element to display minutes.
+   * @param {HTMLElement} secondsEl Element to display seconds.
+   */
+  function calculateAndDisplayTime(startDate, daysEl, hoursEl, minutesEl, secondsEl) {
+      // Check if all elements for this counter exist before proceeding
+      if (!daysEl || !hoursEl || !minutesEl || !secondsEl) return; 
 
-      (function frame() {
-        confetti({
-          particleCount: 7,
-          angle: 60,
-          spread: 80,
-          origin: { x: 0, y: 1 },
-        });
-        confetti({
-          particleCount: 7,
-          angle: 120,
-          spread: 80,
-          origin: { x: 1, y: 1 },
-        });
-
-        if (Date.now() < end) {
-          requestAnimationFrame(frame);
-        }
-      })();
-    }
-
-    launchFireworks();
-
-    const countdownTargetDate = new Date("September 16, 2025 00:00:00").getTime();
-    const windowEndDate = new Date("October 15, 2025 23:59:59").getTime();
-    let confettiFired = false;
-
-    function updateCountdown() {
       const now = new Date();
-      const now_time = now.getTime();
-      const year = now.getFullYear();
-      const month = now.getMonth();
-      const day = now.getDate();
+      let difference = now.getTime() - startDate.getTime();
 
-      if (year === 2025 && month === 9 && day >= 15) {
-        gifLeft.classList.remove("hidden");
-        gifRight.classList.remove("hidden");
-      } else {
-        gifLeft.classList.add("hidden");
-        gifRight.classList.add("hidden");
+      if (difference < 0) {
+          // If the current date is before the start date, display 0
+          daysEl.textContent = 0;
+          hoursEl.textContent = '00';
+          minutesEl.textContent = '00';
+          secondsEl.textContent = '00';
+          return;
       }
 
-      let warningText = "";
+      // Calculate days
+      const days = Math.floor(difference / ONE_DAY);
+      let remainingTime = difference % ONE_DAY;
 
-      if (year === 2025 && month === 8) {
-        if (day === 9) {
-          warningText = "One Week to Go!";
-        } else if (day >= 10 && day <= 14) {
-          warningText = "Less Than a Week to Go!";
-        } else if (day === 15) {
-          warningText = "The Window Opens Tomorrow";
-        }
-      }
+      // Calculate hours
+      const hours = Math.floor(remainingTime / ONE_HOUR);
+      remainingTime %= ONE_HOUR;
 
-      if (oneWeekWarningElement) {
-        if (warningText) {
-          oneWeekWarningElement.innerHTML = warningText;
-          oneWeekWarningElement.style.color = "red";
-          oneWeekWarningElement.style.fontSize = "2.5em";
-          oneWeekWarningElement.style.fontFamily =
-            "'FFF Forward', Arial, sans-serif";
-          oneWeekWarningElement.style.textShadow = "0 0 10px rgba(255, 0, 0, 0.7)";
-          oneWeekWarningElement.style.marginBottom = "20px";
-        } else {
-          oneWeekWarningElement.innerHTML = "";
-          oneWeekWarningElement.style.marginBottom = "0px";
-        }
-      }
+      // Calculate minutes
+      const minutes = Math.floor(remainingTime / ONE_MINUTE);
+      remainingTime %= ONE_MINUTE;
 
-      if (now_time > windowEndDate) {
-        countdownElement.innerHTML = `THE DEATH DATE WINDOW HAS CLOSED<br><span style="font-size: 0.5em;">If that twink ain't dead there's games afoot</span>`;
-        countdownElement.style.color = "LightBlue";
-        countdownElement.style.textShadow = "0 0 10px rgba(173, 216, 230, 0.7)";
-      } else if (now_time >= countdownTargetDate && now_time <= windowEndDate) {
-        const distanceToEnd = windowEndDate - now_time;
-        const days = Math.floor(distanceToEnd / (1000 * 60 * 60 * 24));
-        const hours = Math.floor(
-          (distanceToEnd % (1000 * 60 * 60 * 24)) / (1000 * 60 * 60)
-        );
-        const minutes = Math.floor(
-          (distanceToEnd % (1000 * 60 * 60)) / (1000 * 60)
-        );
-        const seconds = Math.floor((distanceToEnd % (1000 * 60)) / 1000);
+      // Calculate seconds
+      const seconds = Math.floor(remainingTime / ONE_SECOND);
 
-        countdownElement.innerHTML = `WE ARE IN EDGAR'S DEATH DATE WINDOW<br><span style="font-size: 0.5em;">Closes in: ${days}d ${hours}h ${minutes}m ${seconds}s</span>`;
-        countdownElement.style.color = "red";
-        countdownElement.style.textShadow = "0 0 10px rgba(255, 0, 0, 0.7)";
-
-        if (!confettiFired) {
-          const duration = 15 * 1000;
-          const animationEnd = Date.now() + duration;
-          const defaults = {
-            startVelocity: 30,
-            spread: 360,
-            ticks: 60,
-            zIndex: 0,
-          };
-
-          function randomInRange(min, max) {
-            return Math.random() * (max - min) + min;
-          }
-
-          const interval = setInterval(function () {
-            const timeLeft = animationEnd - Date.now();
-
-            if (timeLeft <= 0) {
-              return clearInterval(interval);
-            }
-
-            const particleCount = 50 * (timeLeft / duration);
-            confetti({
-              ...defaults,
-              particleCount,
-              origin: { x: randomInRange(0.1, 0.3), y: Math.random() - 0.2 },
-            });
-            confetti({
-              ...defaults,
-              particleCount,
-              origin: { x: randomInRange(0.7, 0.9), y: Math.random() - 0.2 },
-            });
-          }, 250);
-
-          confettiFired = true;
-        }
-      } else {
-        const distance = countdownTargetDate - now_time;
-        const days = Math.floor(distance / (1000 * 60 * 60 * 24));
-        const hours = Math.floor(
-          (distance % (1000 * 60 * 60 * 24)) / (1000 * 60 * 60)
-        );
-        const minutes = Math.floor((distance % (1000 * 60 * 60)) / (1000 * 60));
-        const seconds = Math.floor((distance % (1000 * 60)) / 1000);
-        countdownElement.innerHTML = `${days}d ${hours}h ${minutes}m ${seconds}s`;
-        countdownElement.style.color = "white";
-        countdownElement.style.textShadow = "0 0 15px rgba(255, 255, 255, 0.7)";
-      }
-    }
-    setInterval(updateCountdown, 1000);
-    updateCountdown();
+      // Update DOM
+      daysEl.textContent = days.toLocaleString(); // Add commas for larger numbers
+      hoursEl.textContent = String(hours).padStart(2, '0');
+      minutesEl.textContent = String(minutes).padStart(2, '0');
+      secondsEl.textContent = String(seconds).padStart(2, '0');
   }
+
+  function updateAllCounters() {
+      // Update Died Counter (September 16, 2025)
+      calculateAndDisplayTime(diedDate, diedDaysElement, diedHoursElement, diedMinutesElement, diedSecondsElement);
+
+      // Update Cured Counter (December 10, 2030)
+      calculateAndDisplayTime(curedDate, curedDaysElement, curedHoursElement, curedMinutesElement, curedSecondsElement);
+  }
+
+  // Set the initial counter value
+  updateAllCounters();
+
+  // Update the counter every second
+  setInterval(updateAllCounters, 1000); 
+
+  // --- Skull Float Effect Logic ---
+  function launchSkullEffect() {
+      const skullCount = 60; // Number of skulls to launch
+      const emoji = '💀';
+      const body = document.body;
+
+      for (let i = 0; i < skullCount; i++) {
+          const skull = document.createElement('span');
+          skull.classList.add('floating-skull');
+          skull.textContent = emoji;
+
+          // Random position across the width of the screen
+          const startX = Math.random() * 100; // 0 to 100 viewport width (vw)
+          skull.style.left = `${startX}vw`;
+
+          // Random animation duration (5 to 10 seconds)
+          const duration = 5 + Math.random() * 5; 
+          skull.style.animationDuration = `${duration}s`;
+          
+          // Random delay for a staggered start (0 to 15 seconds)
+          // This ensures new skulls keep appearing for about 15-20 seconds before stopping
+          const delay = Math.random() * 15; 
+          skull.style.animationDelay = `${delay}s`;
+
+          // Ensure it starts slightly rotated for a more natural look
+          skull.style.transform = `rotate(${Math.random() * 360}deg)`;
+
+          // Clean up the element after the animation finishes
+          skull.addEventListener('animationend', () => {
+              skull.remove();
+          });
+
+          body.appendChild(skull);
+      }
+  }
+  
+  // --- Confetti Effect Logic ---
+  function launchConfettiEffect() {
+      // Short, dramatic burst from the center-bottom of the screen
+      confetti({
+          angle: 90,
+          spread: 120,
+          particleCount: 100,
+          origin: { y: 1, x: 0.5 },
+          // Using colors that match the site's theme (Red/Gold/Blue/White)
+          colors: ['#E4002B', '#FFD700', '#4169E1', '#FFFFFF'],
+          scalar: 1.2
+      });
+  }
+
+
+  // Launch effects when the page loads
+  launchSkullEffect();
+  launchConfettiEffect();
+
+  
+  // ------------------------------------------------------------------------------------------------
+  // The rest of the script (poll-related functions) is included below to complete the file.
+  // ------------------------------------------------------------------------------------------------
 
   if (window.location.pathname.endsWith("past-results.html")) {
     const pollOptionKeys = [

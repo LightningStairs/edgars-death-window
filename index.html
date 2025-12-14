@@ -1,44 +1,93 @@
 <!DOCTYPE html>
 <html lang="en">
+
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Edgar's Death Window</title>
-    <link rel="preconnect" href="https://fonts.googleapis.com">
-    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-    <link href="https://fonts.googleapis.com/css2?family=Roboto:wght@500&display=swap" rel="stylesheet">
-    <link rel="stylesheet" href="./style.css">
-    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
-    <script src="https://www.gstatic.com/firebasejs/9.6.1/firebase-app-compat.js"></script>
-    <script src="https://www.gstatic.com/firebasejs/9.6.1/firebase-firestore-compat.js"></script>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Edgar's Death Window</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Roboto:wght@500&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="./style.css">
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/9.6.1/firebase-app-compat.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/9.6.1/firebase-firestore-compat.js"></script>
     <script src="https://cdn.jsdelivr.net/npm/canvas-confetti@1.9.3/dist/confetti.browser.min.js"></script>
 </head>
-<body>
-    <header class="main-header">
-        <nav class="main-nav">
-            <a href="index.html" class="nav-link">Home</a>
-            <a href="past-results.html" class="nav-link">Past Results</a>
-            <a href="calendar.html" class="nav-link">Calendar</a>
-        </nav>
-    </header>
 
-    <div class="container">
-        <h1 style="margin-top: 50px;">Countdown to Edgar’s Death Window</h1>
-        <div id="countdown"></div>
-        <div class="countdown-container">
-            <img src="tickety-tock-blue's-clues.gif" alt="Tickety Tock clock" id="gif-left" class="countdown-gif hidden">
-            <div id="one-week-warning"></div>
-            <img src="tickety-tock-blue's-clues.gif" alt="Tickety Tock clock" id="gif-right" class="countdown-gif hidden">
+<body>
+    <header class="main-header">
+        <nav class="main-nav">
+            <a href="index.html" class="nav-link">Home</a>
+            <a href="past-results.html" class="nav-link">Past Results</a>
+            <a href="calendar.html" class="nav-link">Calendar</a>
+        </nav>
+    </header>
+
+    <div class="container">
+
+        <h1 style="margin-top: 50px;">Days Since <br> Edgar Was Cured</h1>
+        <div id="days-since-cured" class="time-counter">
+            <div class="time-unit">
+                <span id="cured-days" class="time-number">0</span>
+                <span class="time-label">DAYS</span>
+            </div>
+            <div class="time-unit">
+                <span id="cured-hours" class="time-number">0</span>
+                <span class="time-label">HOURS</span>
+            </div>
+            <div class="time-unit">
+                <span id="cured-minutes" class="time-number">0</span>
+                <span class="time-label">MINUTES</span>
+            </div>
+            <div class="time-unit">
+                <span id="cured-seconds" class="time-number">0</span>
+                <span class="time-label">SECONDS</span>
+            </div>
         </div>
-       
-        <blockquote>
-            <p><strong>MIKEY:</strong> That Instagram post by… MDawg… makes me really nervous. “Here’s to the next eight years”? Does that mean that 8 years from now is when it… happens?</p>
-            <p><strong>MIKE:</strong> I don’t see any other way to read it, it’s not like they’re gonna get divorced in eight years.</p>
-            <p><strong>MIKEY:</strong> Okay, so how many years until you and he…?</p>
-            <p><strong>MIKE:</strong> Less than three. If it’s eight years on the dot, we catch up in less than three years.</p>
-            <footer>— <a href="https://woebegonepod.com/2022/10/19/episode-87-have-you-considered-going-home/"> <em>Episode 87: Have You Considered Going Home?</em>, October 19, 2022</a></footer>
-        </blockquote>
-    </div>
-    <script src="./script.js"></script>
+
+        <h1 style="margin-top: 50px;">Days Since <br> Edgar Died</h1>
+        <div id="days-since-died" class="time-counter">
+            <div class="time-unit">
+                <span id="died-days" class="time-number">0</span>
+                <span class="time-label">DAYS</span>
+            </div>
+            <div class="time-unit">
+                <span id="died-hours" class="time-number">0</span>
+                <span class="time-label">HOURS</span>
+            </div>
+            <div class="time-unit">
+                <span id="died-minutes" class="time-number">0</span>
+                <span class="time-label">MINUTES</span>
+            </div>
+            <div class="time-unit">
+                <span id="died-seconds" class="time-number">0</span>
+                <span class="time-label">SECONDS</span>
+            </div>
+        </div>
+
+        <div class="countdown-container">
+            <img src="tickety-tock-blue's-clues.gif" alt="Tickety Tock clock" id="gif-left" class="countdown-gif">
+            <div id="one-week-warning"></div>
+            <img src="tickety-tock-blue's-clues.gif" alt="Tickety Tock clock" id="gif-right" class="countdown-gif">
+        </div>
+
+        <blockquote>
+            <p><strong>MIKEY:</strong> That Instagram post by… MDawg… makes me really nervous. “Here’s to
+                the next eight years”? Does that mean that 8 years from now is when it… happens?</p><br>
+            <p><strong>MIKE:</strong> I don’t see any other way to read it, it’s not like they’re gonna get
+                divorced in eight years.</p><br>
+            <p><strong>MIKEY:</strong> Okay, so how many years until you and he…?</p><br>
+            <p><strong>MIKE:</strong> Less than three. If it’s eight years on the dot, we catch up in less
+                than three years.</p><br>
+            <footer>— <a href="https://woebegonepod.com/2022/10/19/episode-87-have-you-considered-going-home/">
+                    <em>Episode
+                        87: Have You Considered Going Home?</em>, October 19, 2022</a></footer>
+        </blockquote>
+
+    </div>
+
+    <script src="./script.js"></script>
 </body>
+
 </html>
