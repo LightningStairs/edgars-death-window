@@ -11,156 +11,46 @@ document.addEventListener("DOMContentLoaded", function () {
   firebase.initializeApp(firebaseConfig);
   const db = firebase.firestore();
 
-  const countdownElement = document.getElementById("countdown");
-  const oneWeekWarningElement = document.getElementById("one-week-warning");
+  // New element ID for the counter
+  const daysSinceCuredElement = document.getElementById("days-since-cured");
 
-  if (countdownElement) {
+  if (daysSinceCuredElement) {
+    // The date Edgar was cured (Dec 10 2030)
+    const curedDate = new Date("December 10, 2030 00:00:00 EST");
+
+    function updateDaysSinceCured() {
+        const now = new Date();
+        const difference = now.getTime() - curedDate.getTime();
+
+        // Calculate whole days passed
+        const days = Math.floor(difference / (1000 * 60 * 60 * 24));
+
+        if (daysSinceCuredElement) {
+            // Apply a simple structure for potential styling via CSS
+            daysSinceCuredElement.innerHTML = `<span class="countdown-number">${days}</span><span class="countdown-label"> DAYS</span>`;
+        }
+    }
+
+    // Set the initial counter value
+    updateDaysSinceCured();
+
+    // Update the counter every second (though only days change, this keeps the DOM ready)
+    setInterval(updateDaysSinceCured, 1000); 
+
+    // Remove old countdown-specific elements from the DOM as they are no longer used
     const gifLeft = document.getElementById("gif-left");
     const gifRight = document.getElementById("gif-right");
+    const oneWeekWarningElement = document.getElementById("one-week-warning");
 
-    function launchFireworks() {
-      var duration = 5 * 1000;
-      var end = Date.now() + duration;
-
-      (function frame() {
-        confetti({
-          particleCount: 7,
-          angle: 60,
-          spread: 80,
-          origin: { x: 0, y: 1 },
-        });
-        confetti({
-          particleCount: 7,
-          angle: 120,
-          spread: 80,
-          origin: { x: 1, y: 1 },
-        });
-
-        if (Date.now() < end) {
-          requestAnimationFrame(frame);
-        }
-      })();
-    }
-
-    launchFireworks();
-
-    const countdownTargetDate = new Date("September 16, 2025 00:00:00").getTime();
-    const windowEndDate = new Date("October 15, 2025 23:59:59").getTime();
-    let confettiFired = false;
-
-    function updateCountdown() {
-      const now = new Date();
-      const now_time = now.getTime();
-      const year = now.getFullYear();
-      const month = now.getMonth();
-      const day = now.getDate();
-
-      if (year === 2025 && month === 9 && day >= 15) {
-        gifLeft.classList.remove("hidden");
-        gifRight.classList.remove("hidden");
-      } else {
-        gifLeft.classList.add("hidden");
-        gifRight.classList.add("hidden");
-      }
-
-      let warningText = "";
-
-      if (year === 2025 && month === 8) {
-        if (day === 9) {
-          warningText = "One Week to Go!";
-        } else if (day >= 10 && day <= 14) {
-          warningText = "Less Than a Week to Go!";
-        } else if (day === 15) {
-          warningText = "The Window Opens Tomorrow";
-        }
-      }
-
-      if (oneWeekWarningElement) {
-        if (warningText) {
-          oneWeekWarningElement.innerHTML = warningText;
-          oneWeekWarningElement.style.color = "red";
-          oneWeekWarningElement.style.fontSize = "2.5em";
-          oneWeekWarningElement.style.fontFamily =
-            "'FFF Forward', Arial, sans-serif";
-          oneWeekWarningElement.style.textShadow = "0 0 10px rgba(255, 0, 0, 0.7)";
-          oneWeekWarningElement.style.marginBottom = "20px";
-        } else {
-          oneWeekWarningElement.innerHTML = "";
-          oneWeekWarningElement.style.marginBottom = "0px";
-        }
-      }
-
-      if (now_time > windowEndDate) {
-        countdownElement.innerHTML = `THE DEATH DATE WINDOW HAS CLOSED<br><span style="font-size: 0.5em;">If that twink ain't dead there's games afoot</span>`;
-        countdownElement.style.color = "LightBlue";
-        countdownElement.style.textShadow = "0 0 10px rgba(173, 216, 230, 0.7)";
-      } else if (now_time >= countdownTargetDate && now_time <= windowEndDate) {
-        const distanceToEnd = windowEndDate - now_time;
-        const days = Math.floor(distanceToEnd / (1000 * 60 * 60 * 24));
-        const hours = Math.floor(
-          (distanceToEnd % (1000 * 60 * 60 * 24)) / (1000 * 60 * 60)
-        );
-        const minutes = Math.floor(
-          (distanceToEnd % (1000 * 60 * 60)) / (1000 * 60)
-        );
-        const seconds = Math.floor((distanceToEnd % (1000 * 60)) / 1000);
-
-        countdownElement.innerHTML = `WE ARE IN EDGAR'S DEATH DATE WINDOW<br><span style="font-size: 0.5em;">Closes in: ${days}d ${hours}h ${minutes}m ${seconds}s</span>`;
-        countdownElement.style.color = "red";
-        countdownElement.style.textShadow = "0 0 10px rgba(255, 0, 0, 0.7)";
-
-        if (!confettiFired) {
-          const duration = 15 * 1000;
-          const animationEnd = Date.now() + duration;
-          const defaults = {
-            startVelocity: 30,
-            spread: 360,
-            ticks: 60,
-            zIndex: 0,
-          };
-
-          function randomInRange(min, max) {
-            return Math.random() * (max - min) + min;
-          }
-
-          const interval = setInterval(function () {
-            const timeLeft = animationEnd - Date.now();
-
-            if (timeLeft <= 0) {
-              return clearInterval(interval);
-            }
-
-            const particleCount = 50 * (timeLeft / duration);
-            confetti({
-              ...defaults,
-              particleCount,
-              origin: { x: randomInRange(0.1, 0.3), y: Math.random() - 0.2 },
-            });
-            confetti({
-              ...defaults,
-              particleCount,
-              origin: { x: randomInRange(0.7, 0.9), y: Math.random() - 0.2 },
-            });
-          }, 250);
-
-          confettiFired = true;
-        }
-      } else {
-        const distance = countdownTargetDate - now_time;
-        const days = Math.floor(distance / (1000 * 60 * 60 * 24));
-        const hours = Math.floor(
-          (distance % (1000 * 60 * 60 * 24)) / (1000 * 60 * 60)
-        );
-        const minutes = Math.floor((distance % (1000 * 60 * 60)) / (1000 * 60));
-        const seconds = Math.floor((distance % (1000 * 60)) / 1000);
-        countdownElement.innerHTML = `${days}d ${hours}h ${minutes}m ${seconds}s`;
-        countdownElement.style.color = "white";
-        countdownElement.style.textShadow = "0 0 15px rgba(255, 255, 255, 0.7)";
-      }
-    }
-    setInterval(updateCountdown, 1000);
-    updateCountdown();
-  }
+    if (gifLeft) gifLeft.remove();
+    if (gifRight) gifRight.remove();
+    if (oneWeekWarningElement) oneWeekWarningElement.remove();
+    
+    // The old launchFireworks function is also no longer needed in this context, 
+    // but the code block will proceed with the rest of the poll logic below.
+  } 
+  
+  // Note: The rest of the script (handling the polls) remains unchanged.
 
   if (window.location.pathname.endsWith("past-results.html")) {
     const pollOptionKeys = [
