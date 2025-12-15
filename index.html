@@ -15,7 +15,7 @@
     <script src="https://cdn.jsdelivr.net/npm/canvas-confetti@1.9.3/dist/confetti.browser.min.js"></script>
 </head>
 
-<body>
+<body id="index-page">
     <header class="main-header">
         <nav class="main-nav">
             <a href="index.html" class="nav-link">Home</a>
@@ -25,68 +25,49 @@
     </header>
 
     <div class="container">
-
-        <h1 style="margin-top: 50px;">Days Since <br> Edgar Was Cured</h1>
-        <div id="days-since-cured" class="time-counter">
-            <div class="time-unit">
-                <span id="cured-days" class="time-number">0</span>
-                <span class="time-label">DAYS</span>
-            </div>
-            <div class="time-unit">
-                <span id="cured-hours" class="time-number">0</span>
-                <span class="time-label">HOURS</span>
-            </div>
-            <div class="time-unit">
-                <span id="cured-minutes" class="time-number">0</span>
-                <span class="time-label">MINUTES</span>
-            </div>
-            <div class="time-unit">
-                <span id="cured-seconds" class="time-number">0</span>
-                <span class="time-label">SECONDS</span>
-            </div>
-        </div>
-
-        <h1 style="margin-top: 50px;">Days Since <br> Edgar Died</h1>
-        <div id="days-since-died" class="time-counter">
-            <div class="time-unit">
-                <span id="died-days" class="time-number">0</span>
-                <span class="time-label">DAYS</span>
-            </div>
-            <div class="time-unit">
-                <span id="died-hours" class="time-number">0</span>
-                <span class="time-label">HOURS</span>
-            </div>
-            <div class="time-unit">
-                <span id="died-minutes" class="time-number">0</span>
-                <span class="time-label">MINUTES</span>
-            </div>
-            <div class="time-unit">
-                <span id="died-seconds" class="time-number">0</span>
-                <span class="time-label">SECONDS</span>
-            </div>
-        </div>
-
+        <h1 style="margin-top: 50px;">The Status of Mike's Edgar:</h1>
+        <div id="countdown"></div>
         <div class="countdown-container">
-            <img src="tickety-tock-blue's-clues.gif" alt="Tickety Tock clock" id="gif-left" class="countdown-gif">
+            <img src="tickety-tock-blue's-clues.gif" alt="Tickety Tock clock" id="gif-left"
+                class="countdown-gif hidden">
             <div id="one-week-warning"></div>
-            <img src="tickety-tock-blue's-clues.gif" alt="Tickety Tock clock" id="gif-right" class="countdown-gif">
+            <img src="tickety-tock-blue's-clues.gif" alt="Tickety Tock clock" id="gif-right"
+                class="countdown-gif hidden">
         </div>
 
+        <div class="extra-counters">
+            <div class="counter-group">
+                <h3 class="counter-title">Days Since Edgar Died</h3>
+                <div class="counter-display">
+                    <span id="died-days">0</span>d
+                    <span id="died-hours">00</span>h
+                    <span id="died-minutes">00</span>m
+                    <span id="died-seconds">00</span>s
+                </div>
+            </div>
+
+            <div class="counter-group">
+                <h3 class="counter-title">Days Since Edgar Was Cured</h3>
+                <div class="counter-display">
+                    <span id="cured-days">0</span>d
+                    <span id="cured-hours">00</span>h
+                    <span id="cured-minutes">00</span>m
+                    <span id="cured-seconds">00</span>s
+                </div>
+            </div>
+        </div>
         <blockquote>
-            <p><strong>MIKEY:</strong> That Instagram post by… MDawg… makes me really nervous. “Here’s to
-                the next eight years”? Does that mean that 8 years from now is when it… happens?</p><br>
-            <p><strong>MIKE:</strong> I don’t see any other way to read it, it’s not like they’re gonna get
-                divorced in eight years.</p><br>
-            <p><strong>MIKEY:</strong> Okay, so how many years until you and he…?</p><br>
-            <p><strong>MIKE:</strong> Less than three. If it’s eight years on the dot, we catch up in less
-                than three years.</p><br>
+            <p><strong>MIKEY:</strong> That Instagram post by… MDawg… makes me really nervous. “Here’s to the next eight
+                years”? Does that mean that 8 years from now is when it… happens?</p>
+            <p><strong>MIKE:</strong> I don’t see any other way to read it, it’s not like they’re gonna get divorced in
+                eight years.</p>
+            <p><strong>MIKEY:</strong> Okay, so how many years until you and he…?</p>
+            <p><strong>MIKE:</strong> Less than three. If it’s eight years on the dot, we catch up in less than three
+                years.</p>
             <footer>— <a href="https://woebegonepod.com/2022/10/19/episode-87-have-you-considered-going-home/">
-                    <em>Episode
-                        87: Have You Considered Going Home?</em>, October 19, 2022</a></footer>
+                    <em>Episode 87: Have You Considered Going Home?</em>, October 19, 2022</a></footer>
         </blockquote>
-
     </div>
-
     <script src="./script.js"></script>
 </body>
 
