@@ -13,10 +13,12 @@ document.addEventListener("DOMContentLoaded", function () {
 
   const countdownElement = document.getElementById("countdown");
   const oneWeekWarningElement = document.getElementById("one-week-warning");
+  
+  // NEW GLOBAL FLAG: Tracks if the skull effect is active
+  let isSkullEffectActive = false;
 
   // ------------------------------------------------------------------------------------------------
   // START: index.html specific logic (Countdown, New Counters, and Effects)
-  // This block runs ONLY if the #countdown element exists (i.e., on index.html)
   // ------------------------------------------------------------------------------------------------
   if (countdownElement) {
     const gifLeft = document.getElementById("gif-left");
@@ -80,33 +82,58 @@ document.addEventListener("DOMContentLoaded", function () {
         calculateAndDisplayTime(curedDate, curedDaysElement, curedHoursElement, curedMinutesElement, curedSecondsElement);
     }
     
-    // --- SKULL & CONFETTI EFFECTS ---
-    function launchSkullEffect() {
-      const skullCount = 60; 
-      const emoji = '💀';
+    // UPDATED HELPER FUNCTION: Launches a single emoji (skull or flower)
+    function createSingleSkull() {
+      if (!isSkullEffectActive) return; // Stop if the timer has expired
+
+      // NEW: Randomly select between skull and flower
+      const emojis = ['💀', '🌸']; 
+      const selectedEmoji = emojis[Math.floor(Math.random() * emojis.length)];
+
       const body = document.body;
+      const skull = document.createElement('span');
+      skull.classList.add('floating-skull');
+      skull.textContent = selectedEmoji;
 
-      for (let i = 0; i < skullCount; i++) {
-          const skull = document.createElement('span');
-          skull.classList.add('floating-skull');
-          skull.textContent = emoji;
+      const startX = Math.random() * 100;
+      skull.style.left = `${startX}vw`;
 
-          const startX = Math.random() * 100;
-          skull.style.left = `${startX}vw`;
+      // Random duration ensures a staggered end time (max 15s)
+      const duration = 10 + Math.random() * 5; 
+      skull.style.animationDuration = `${duration}s`;
+      
+      const delay = Math.random() * 2; // Small delay for immediate staggering
+      skull.style.animationDelay = `${delay}s`;
 
-          const duration = 5 + Math.random() * 5; 
-          skull.style.animationDuration = `${duration}s`;
-          
-          const delay = Math.random() * 15; 
-          skull.style.animationDelay = `${delay}s`;
+      skull.style.transform = `rotate(${Math.random() * 360}deg)`;
 
-          skull.style.transform = `rotate(${Math.random() * 360}deg)`;
+      // Cleanup: Since iteration-count is 1, skulls are removed after animation
+      skull.addEventListener('animationend', () => {
+          skull.remove();
+      });
 
-          skull.addEventListener('animationend', () => {
-              skull.remove();
-          });
+      body.appendChild(skull);
+    }
 
-          body.appendChild(skull);
+    // UPDATED SKULL LAUNCHER: Launches multiple emojis and manages the creation interval
+    function launchSkullEffect() {
+      // Set the active flag and initial burst
+      isSkullEffectActive = true;
+      const totalDuration = 25000; // 25 seconds (midpoint of 20-30s)
+      const interval = 150; // New emoji every 150ms
+
+      // Start spawning emojis
+      const skullInterval = setInterval(createSingleSkull, interval);
+
+      // Stop spawning emojis after totalDuration
+      setTimeout(() => {
+        clearInterval(skullInterval);
+        isSkullEffectActive = false; // Prevents the interval callback from spawning more
+      }, totalDuration);
+      
+      // Initial burst of emojis for immediate visibility
+      for (let i = 0; i < 15; i++) {
+        createSingleSkull();
       }
     }
   
@@ -281,8 +308,6 @@ document.addEventListener("DOMContentLoaded", function () {
 
   // ------------------------------------------------------------------------------------------------
   // START: past-results.html specific logic (Poll Results)
-  // This block runs ONLY if the #past-results body ID exists (i.e., on past-results.html)
-  // This replaces the old 'window.location.pathname.endsWith' check for robust separation.
   // ------------------------------------------------------------------------------------------------
   if (document.getElementById("past-results")) {
     const pollOptionKeys = [

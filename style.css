@@ -195,11 +195,13 @@ blockquote footer {
 /* FLOATING SKULL EFFECT STYLES */
 .floating-skull {
   position: fixed;
-  font-size: 3em;
+  font-size: 2em;
+  /* Smaller size */
   top: 100%;
   animation-name: skull-float;
   animation-timing-function: linear;
   animation-iteration-count: 1;
+  /* RESTORED: Each skull runs once and disappears */
   pointer-events: none;
   z-index: 999;
 }
@@ -207,13 +209,14 @@ blockquote footer {
 @keyframes skull-float {
   0% {
     transform: translateY(0) rotate(0deg);
+    opacity: 0.9;
   }
 
   100% {
     transform: translateY(-100vh) rotate(360deg);
+    opacity: 0;
   }
 }
-
 
 /* POLL STYLES (Existing for both pages) */
 .poll-options {
